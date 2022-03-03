@@ -1,234 +1,197 @@
-### 莎翁的人生智慧
+### 函数式编程
 
-::: tip 提示
-有阅读障碍的同学，可以跳过第一至四节，下载我写好的[工具包](https://github.com/zhangyunchencc/vuepress-devkit.git):
-`git clone https://github.com/zhangyunchencc/vuepress-devkit.git` 然后从第五节开始看。
+::: tip
+函数式编程
 :::
 
-## 一、为什么你需要一个博客？
+## 一、什么是函数式编程
 
-优秀的程序员都在写博客，写博客有很多好处：
+函数式编程(Functional Programming, FP)，FP 是编程范式之一，我们常听说的编程范式还有面向过程编程、面向对象编程。
+：
 
-- 帮助自己梳理、总结、理解知识点（个人提升）
-- 帮助别人理解知识点（好人一生平安）
-- 简历更好看，更多面试机会（升职加薪）
-
-## 二、什么是 VuePress，为什么要使用 VuePress ？
-
-**VuePress** 是尤雨溪（vue.js 框架作者）4 月 12 日发布的一个全新的基于 vue 的静态网站生成器，实际上就是一个 vue 的 spa 应用，内置 webpack，可以用来写文档。详见 [VuePress 中文网](https://vuepress.docschina.org/)
-
-其实类似的建站工具有很多，比如 WordPress、Jekyll、Hexo 等，其中 WordPress 需要自己购买虚拟主机，不考虑；Jekyll 是 Github-Page 默认支持的，听说操作比较复杂，没有用过不做过多评价了；Hexo 之前一直在用，但一直觉得主题不好看，风格不够简洁优雅。自从遇见 VuePress，嗯，就是它了~
-
-VuePress 有很多优点：
-
-- 界面简洁优雅（个人感觉比 HEXO 好看）
-- 容易上手（半小时能搭好整个项目）
-- 更好的兼容、扩展 Markdown 语法
-- 响应式布局，PC 端、手机端
-- Google Analytics 集成
-- 支持 PWA
-
-## 三、开始搭建
-
-### 创建项目文件夹
-
-可以右键手动新建，也可以使用 mkdir 命令新建：
-
-    mkdir vuepressBlogDemo
-
-### 全局安装 VuePress
-
-    npm install -g vuepress
-
-### 进入 vuepressBlogDemo 文件夹，初始化项目
-
-使用 `npm init` 或 `npm init -y`（默认 yes）
-
-    npm init -y
-
-### 创建文件夹和文件
-
-在 vuepressBlogDemo 文件夹中创建 docs 文件夹，在 docs 中创建 .vuepress 文件夹，在.vuepress 中创建 public 文件夹和 config.js 文件，最终项目结构如下所示：
-
-    vuepressBlogDemo
-    ├─── docs
-    │   ├── README.md
-    │   └── .vuepress
-    │       ├── public
-    │       └── config.js
-    └── package.json
-
-### 在 config.js 文件中配置网站标题、描述、主题等信息
+- 面向对象编程的思维方式：把现实世界中的事物抽象成程序世界中的类和对象，通过封装、继承和
+多态来演示事物事件的联系
+- 函数式编程的思维方式：把现实世界的事物和事物之间的联系抽象到程序世界（对运算过程进行抽
+象）
+  - 程序的本质：根据输入通过某种运算获得相应的输出，程序开发过程中会涉及很多有输入和输出的函数 x -> f(联系、映射) -> y，y=f(x)
+  - 函数式编程中的函数指的不是程序中的函数(方法)，而是数学中的函数即映射关系，例如：y = sin(x)，x和y的关系相同的 输入始终要得到相同的输出(纯函数)
+  - 函数式编程用来描述数据(函数)之间的映射
 
 ```js
-module.exports = {
-  title: "Chen's blog",
-  description: "我的个人网站",
-  head: [
-    // 注入到当前页面的 HTML <head> 中的标签
-    ["link", { rel: "icon", href: "/logo.jpg" }], // 增加一个自定义的 favicon(网页标签的图标)
-  ],
-  base: "/", // 这是部署到github相关的配置
-  markdown: {
-    lineNumbers: false, // 代码块显示行号
-  },
-  themeConfig: {
-    nav: [
-      // 导航栏配置
-      { text: "前端基础", link: "/accumulate/" },
-      { text: "算法题库", link: "/algorithm/" },
-      { text: "微博", link: "https://baidu.com" },
-    ],
-    sidebar: "auto", // 侧边栏配置
-    sidebarDepth: 2, // 侧边栏显示2级
-  },
-};
-```
-
-### 在 package.json 文件里添加两个启动命令
-
-```json
-"scripts": {
-  "dev": "vuepress dev docs",
-  "build": "vuepress build docs"
+// 非函数式
+let num1 = 2
+let num2 = 3
+let sum = num1 + num2
+console.log(sum)
+// 函数式
+function add (n1, n2) {
+return n1 + n2
 }
+let sum = add(2, 3)
+console.log(sum)
+
 ```
 
-### 一切就绪 :tada: 跑起来看看吧
 
-    npm run dev
 
-## 四、一些小亮点
+## 二、高阶函数
 
-完成了基础搭建后，就可以在 docs 目录下新建 `.md` 文件写文章了（.md 是 Markdown 语法文件，你需要知道 Markdown 的一些基本写法，很简单，这里给大家一份 [Markdown 语法整理大集合](https://www.jianshu.com/p/b03a8d7b1719)）
+ ### 使用高阶函数的意义:
+  - 抽象可以帮我们屏蔽细节，只需要关注与我们的目标
+  - 高阶函数是用来抽象通用的问题
 
-下面给大家安利一些实用的方法。
+  ```js
+    // 面向过程的方式
+    let array = [1, 2, 3, 4]
+      for (let i = 0; i < array.length; i++) {
+      console.log(array[i])
+    }
+    // 高阶高阶函数
+    let array = [1, 2, 3, 4]
+    forEach(array, item => {
+     console.log(item)
+    })
+    let r = filter(array, item => {
+      return item % 2 === 0
+    })
 
-### 代码块高亮
+```
+- 函数作为参数
+  ```Js
+  // forEach
+  function forEach (array, fn) {
+  for (let i = 0; i < array.length; i++) {
+  fn(array[i])
+  }
+  }
+  // filter
+  function filter (array, fn) {
+  let results = []
+  for (let i = 0; i < array.length; i++) {
+  if (fn(array[i])) {
+    results.push(array[i])
+    }
+    }
+  return results
+  }
+  ```
+  
+- 函数作为返回值
 
-在 .md 文件中书写代码时，可在 \`\`\` 后增加 js、html、json 等格式类型，代码块即可按照指定类型高亮
+  ```js
+    function makeFn () {
+        let msg = 'Hello function'
+        return function () {
+        console.log(msg)
+        }
+    }
+    const fn = makeFn()
+    fn()
+  ```
 
-代码：
 
-<pre class="language-text"><code>``` js
-export default {
-  data () {
-    return {
-      msg: 'Highlighted!'
+## 三 、闭包
+
+  - 闭包 (Closure)：函数和其周围的状态(词法环境)的引用捆绑在一起形成闭
+  - 闭包的本质：函数在执行的时候会放到一个执行栈上当函数执行完毕之后会从执行栈上移除，但是
+堆上的作用域成员因为被外部引用不能释放，因此内部函数依然可以访问外部函数的成员
+
+
+  ```js
+    // 函数作为返回值
+    function makeFn () {
+      let msg = 'Hello function'
+      return function () {
+      console.log(msg)
+    }
+    }
+    const fn = makeFn()
+    fn()
+
+```
+  
+- 闭包案例
+
+
+  ```js
+   // 第一个数是基本工资，第二个数是绩效工资
+    function makeSalary (x) {
+      return function (y) {
+       return x + y
+      }
+    }
+    let salaryLevel1 = makeSalary(1500)
+    let salaryLevel2 = makeSalary(2500)
+    console.log(salaryLevel1(2000))
+    console.log(salaryLevel1(3000))
+
+  ```
+
+## 四、纯函数
+
+相同的输入永远会得到相同的输出，而且没有任何可观察的副作用
+
+ - 数组的 slice 和 splice 分别是：纯函数和不纯的函数
+ - 可缓存 
+    - slice 返回数组中的指定部分，不会改变原数组
+    - splice 对数组进行操作返回该数组，会改变原数组
+
+
+
+```js
+ 
+let numbers = [1, 2, 3, 4, 5]
+// 纯函数
+numbers.slice(0, 3)
+// => [1, 2, 3]
+numbers.slice(0, 3)
+// => [1, 2, 3]
+numbers.slice(0, 3)
+// => [1, 2, 3]
+// 不纯的函数
+numbers.splice(0, 3)
+// => [1, 2, 3]
+numbers.splice(0, 3)
+// => [4, 5]
+numbers.splice(0, 3)
+// => []
+```
+
+
+## 五 、柯里化
+
+ - 柯里化可以让我们给一个函数传递较少的参数得到一个已经记住了某些固定参数的新函数
+ - 这是一种对函数参数的'缓存'
+ - 让函数变的更灵活，让函数的粒度更小
+ - 可以把多元函数转换成一元函数，可以组合使用函数产生强大的功能
+  
+
+```js
+  function checkAge (age) {
+    let min = 18
+    return age >= min
+  }
+  // 普通纯函数
+  function checkAge (min, age) {
+    return age >= min
+  }
+  checkAge(18, 24)
+  checkAge(18, 20)
+  checkAge(20, 30)
+  // 柯里化
+  function checkAge (min) {
+    return function (age) {
+      return age >= min
     }
   }
-}
-```</code></pre>
+  // ES6 写法
+  let checkAge = min => (age => age >= min)
+  let checkAge18 = checkAge(18)
+  let checkAge20 = checkAge(20)
+  checkAge18(24)
+  checkAge18(20)
 
-效果：
-
-```js
-export default {
-  data() {
-    return {
-      msg: "Highlighted!",
-    };
-  },
-};
 ```
-
-### 自定义容器
-
-代码：
-
-    ::: tip 提示
-    this is a tip
-    :::
-
-    ::: warning 注意
-    this is a tip
-    :::
-
-    ::: danger 警告
-    this is a tip
-    :::
-
-效果：
-::: tip 提示
-this is a tip
-:::
-
-::: warning 注意
-this is a tip
-:::
-
-::: danger 警告
-this is a tip
-:::
-
-### 支持 Emoji
-
-代码：
-
-    :tada: :100: :bamboo: :gift_heart: :fire:
-
-效果：
-:tada: :100: :bamboo: :gift_heart: :fire:
-
-:point_right: 这里有一份 [Emoji 大全](https://www.webpagefx.com/tools/emoji-cheat-sheet/)
-
-### 支持 PWA
-
-VuePress 默认支持 [PWA](https://segmentfault.com/a/1190000012353473)，配置方法如下：
-
-config.js 文件中增加
-
-```js
-head: [ // 注入到当前页面的 HTML <head> 中的标签
-  ['link', { rel: 'manifest', href: '/photo.jpg' }],
-  ['link', { rel: 'apple-touch-icon', href: '/photo.jpg' }],
-],
-serviceWorker: true // 是否开启 PWA
-```
-
-public 文件夹下新建 manifest.json 文件，添加
-
-```json
-{
-  "name": "张三",
-  "short_name": "张三",
-  "start_url": "index.html",
-  "display": "standalone",
-  "background_color": "#2196f3",
-  "description": "张三的个人主页",
-  "theme_color": "blue",
-  "icons": [
-    {
-      "src": "./photo.jpg",
-      "sizes": "144x144",
-      "type": "image/png"
-    }
-  ],
-  "related_applications": [
-    {
-      "platform": "web"
-    },
-    {
-      "platform": "play",
-      "url": "https://play.google.com/store/apps/details?id=cheeaun.hackerweb"
-    }
-  ]
-}
-```
-
-最后在 iPhone 的 safrai 浏览器中打开本网站，点击 `+添加到主屏幕` 就能在桌面看到一个像原生 App 一样的图标（感觉自己写了一个 App 有木有 :smile:）
-
-## 五、部署上线
-
-说了这么多都是在本地进行的，现在我们要把本地的内容推送到某个服务器上，这样只要有网络，就可以随时随地看自己的网站了。
-
-一般来说，有两种方案可供选择：
-
-1. 自己买一个服务器，阿里云、腾讯云等，这种方式的好处是速度有保证、可以被搜索引擎收录，坏处是要花钱啊 :moneybag: 土豪同学可以考虑。
-2. 使用 [Github Pages](https://pages.github.com/) 。什么是 Github Pages 呢？简单说就是 Github 提供的、用于搭建个人网站的静态站点托管服务。很多人用它搭建个人博客。这种方式的好处是免费、方便，坏处是速度可能会有些慢、不能被国内的搜索引擎收录。
-
-最终我选择了方案 2，下面将给大家讲解如何使用 Github Pages 服务。
-
 ### 登陆 [Github](https://github.com/)
 
 打开 github 网站，登陆自己的 github 账号（没有账号的快去注册并面壁思过作为一个优秀的程序员为啥连一个 github 账号都没有）
