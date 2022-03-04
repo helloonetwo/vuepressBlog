@@ -52,11 +52,6 @@ module.exports = {
             "JS 异步编程"
           ]
         }
-      ],
-      "/life/": [
-        "",
-        "魔都折叠",
-        "莎翁的智慧"
       ]
     },
     sidebarDepth: 1,

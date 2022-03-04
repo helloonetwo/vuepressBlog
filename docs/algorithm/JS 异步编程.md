@@ -164,7 +164,7 @@ numbers.splice(0, 3)
  - 这是一种对函数参数的'缓存'
  - 让函数变的更灵活，让函数的粒度更小
  - 可以把多元函数转换成一元函数，可以组合使用函数产生强大的功能
-  
+- 当一个函数有多个参数的时候先传递一部分参数调用它（这部分参数以后永远不变）, 然后返回一个新的函数接收剩余的参数，返回结果
 
 ```js
   function checkAge (age) {
@@ -184,7 +184,7 @@ numbers.splice(0, 3)
       return age >= min
     }
   }
-  // ES6 写法
+  // ES6 写法 可以把多元函数转换成一元函数，可以组合使用函数产生强大的功能
   let checkAge = min => (age => age >= min)
   let checkAge18 = checkAge(18)
   let checkAge20 = checkAge(20)
@@ -192,177 +192,362 @@ numbers.splice(0, 3)
   checkAge18(20)
 
 ```
-### 登陆 [Github](https://github.com/)
+### 手写 lodash 中的柯里化函数
 
-打开 github 网站，登陆自己的 github 账号（没有账号的快去注册并面壁思过作为一个优秀的程序员为啥连一个 github 账号都没有）
+ ```js
+ function getSum (a, b, c) {
+  return a + b + c
+}
 
-接着我们新建两个仓库：
+const curried = curry(getSum)
 
-### 新建仓库一： USERNAME.github.io （不用克隆到本地）
+console.log(curried(1, 2, 3))
+console.log(curried(1)(2, 3))
+console.log(curried(1, 2)(3))
 
-<b>！！！注意：USERNAME 必须是你 Github 的账号名称，不是你的名字拼音，也不是你的非主流网名，不要瞎起，要保证和 Github 账号名一模一样！</b>
 
-例如我的 Github 账号名称是 zhangyunchencc
-
-![](/images/eg13.png)
-
-那么新建仓库，Repository name 就填写为：zhangyunchencc.github.io
-
-![](/images/eg14.png)
-
-<b>这个仓库建好后，不用克隆到本地，内容更新修改都在仓库二中进行。</b>
-
-### 新建仓库二：随便起一个名字，比如：vuepressBlog （克隆到本地）
-
-这个项目是用来开发博客的，以后只需要改这个项目就够了。
-
-- 使用工具包的，将 [vuepress-devkit](https://github.com/zhangyunchencc/vuepress-devkit.git) 中的内容拷贝到 vuepressBlog 文件夹中
-
-- 自己从头搭建的，将 vuepressBlogDemo 文件夹的内容拷贝到仓库二，并在根目录下创建 deploy.sh 文件，内容如下：
-
-```sh
-#!/usr/bin/env sh
-
-# 确保脚本抛出遇到的错误
-set -e
-
-# 生成静态文件
-npm run build
-
-# 进入生成的文件夹
-cd docs/.vuepress/dist
-
-# 如果是发布到自定义域名
-# echo 'www.yourwebsite.com' > CNAME
-
-git init
-git add -A
-git commit -m 'deploy'
-
-# 如果你想要部署到 https://USERNAME.github.io
-git push -f git@github.com:USERNAME/USERNAME.github.io.git master
-
-# 如果发布到 https://USERNAME.github.io/<REPO>  REPO=github上的项目
-# git push -f git@github.com:USERNAME/<REPO>.git master:gh-pages
-
-cd -
-```
-
-### 修改仓库二中的 deploy.sh 发布脚本
-
-把文件中的 USERNAME 改成 Github 账号名，例如我的账号名是 zhangyunchencc，那么就可以改为：
-
-```sh
-# 如果你想要部署到 https://USERNAME.github.io
-git push -f git@github.com:zhangyunchencc/zhangyunchencc.github.io.git master
-```
-
-这样仓库二和仓库一就建立了关联。
-
-简单说二者的关系是：仓库一负责显示网站内容，我们不需要改动它；日常开发和新增内容，都在仓库二中，并通过 npm run deploy 命令，将代码发布到仓库一。
-
-### 在 package.json 文件夹中添加发布命令（使用工具包的请忽略）
-
-```json
-"scripts": {
-  "deploy": "bash deploy.sh"
+function curry (func) {
+  return function curriedFn(...args) {
+    // 判断实参和形参的个数
+    if (args.length < func.length) {
+      return function () {
+        console.log(Array.from(arguments), ...args)
+        return curriedFn(...args.concat(Array.from(arguments)))
+      }
+    }
+    console.log(...args, '...args')
+    return func(...args)
+  }
 }
 ```
 
-### :clap: 大功告成，运行发布命令
 
-    npm run deploy
 
-此时打开 Github Settings 中下面的链接: [https://zhangyunchencc.github.io/](https://zhangyunchencc.github.io/) 即可看到自己的主页啦~
+## 六、函数组合
 
-![](/images/eg2.png)
+下面这张图表示程序中使用函数处理数据的过程，给 fn 函数输入参数 a，返回结果 b。可以想想 a 数据
+通过一个管道得到了 b 数据。
 
-#### PC 端页面是这样的：
+![](/images/compose1.png)
 
-![](/images/eg3.png)
+当 fn 函数比较复杂的时候，我们可以把函数 fn 拆分成多个小函数，此时多了中间运算过程产生的 m 和
+n。
+下面这张图中可以想象成把 fn 这个管道拆分成了3个管道 f1, f2, f3，数据 a 通过管道 f3 得到结果 m，m
+再通过管道 f2 得到结果 n，n 通过管道 f1 得到最终结果 b
+![](/images/compose2.png)
 
-#### 手机端页面是这样的：
-
-![](/images/eg4.png=200x)
-<img src="/images/eg4.png" style="width: 50%; display: block; margin: 0 auto;">
-
-可以看到导航栏变成了左上角的小图标，可以打开和收起。
-
-## 六、发布到自己的个人域名
-
-如果你不满足于 https://zhangyunchencc.github.io/ 这样的域名，想要一个自己个人的专属域名，比如 http://www.zhangyunchen.cc/ ，毕竟一些大牛（阮一峰 [http://www.ruanyifeng.com/blog/](http://www.ruanyifeng.com/blog/)） 都是自己名字的网址哦，很方便很酷呢 😎
-
-下面跟着步骤一步步来就好啦~
-
-### 购买域名
-
-推荐在 [新网](http://www.xinnet.com/domain/domain.html) 或 [万网](https://wanwang.aliyun.com/) 购买。
-
-我是在新网购买的，下面以新网为例，万网是类似的。
-
-购买完成后进入管理后台，点击 ”解析“ 按钮，添加下面两条内容：
-![](/images/eg5.png)
-
-![](/images/eg6.png)
-
-::: warning 注意！这里有坑：
-在 万网 购买域名的同学请注意，第二条记录中的 _ 请用 @ 代替，万网不支持 _
-:::
-
-记录值里的 IP 可以通过 ping Github 的域名得到：
-
-    ping www.username.github.io
-
-### 修改仓库二中的 deploy.sh 文件
-
-将仓库二中的 deploy.sh 文件的第 13 行反注释掉，并填上自己的域名，deploy.sh 文件的最终版：
-
-```sh
-#!/usr/bin/env sh
-
-# 确保脚本抛出遇到的错误
-set -e
-
-# 生成静态文件
-npm run build
-
-# 进入生成的文件夹
-cd docs/.vuepress/dist
-
-# 如果是发布到自定义域名
-echo 'www.zhangyunchen.cc' > CNAME
-
-git init
-git add -A
-git commit -m 'deploy'
-
-# 如果你想要部署到 https://<USERNAME>.github.io
-git push -f git@github.com:zhangyunchencc/zhangyunchencc.github.io.git master
-
-# 如果发布到 https://<USERNAME>.github.io/<REPO>  REPO=github上的项目
-# git push -f git@github.com:<USERNAME>/vuepress.git master:gh-pages
-
-cd -
-
+``` js
+ fn = compose(f1, f2, f3)
+ b = fn(a)
 ```
 
-此时，我们运行 npm run deploy 即可发布到自己的专属域名啦~
 
-### :clap: 大功告成，打开 [https://www.zhangyunchen.cc](https://www.zhangyunchen.cc) 看一下吧~~~
+- 函数组合 (compose)：如果一个函数要经过多个函数W处理才能得到最终值，这个时候可以把中间
+过程的函数合并成一个函数
+ - 函数就像是数据的管道，函数组合就是把这些管道连接起来，让数据穿过多个管道形成最终
+结果
+ - **函数组合默认是从右到左执行** 
 
-拥有自己专属域名的个人博客感觉很酷哦~
+ ```js
+  // 组合函数
+  function compose (f, g) {
+    return function (x) {
+     return f(g(x))
+    }
+  }
+  function first (arr) {
+     return arr[0]
+  }
+  function reverse (arr) {
+    return arr.reverse()
+  }
+  // 从右到左运行
+  let last = compose(first, reverse)
+  console.log(last([1, 2, 3, 4]))
+```
+### 模拟实现 lodash 的 flowRight 方法
 
-写一些文章，记录一点生活，把自己的网站发给同学朋友看看吧！ :sunglasses:
+ ```js
+  // 多函数组合
+  function compose (...fns) {
+    return function (value) {
+      return fns.reverse().reduce(function (acc, fn) {
+        return fn(acc)
+      }, value)
+    }
+  }
+  // ES6
+  const compose = (...fns) => value => fns.reverse().reduce((acc, fn) =>
+  fn(acc), value)
+```
 
-## 七、最后
+## 七、函子
+### 什么是么是 Functor
+- 容器：包含值和值的变形关系(这个变形关系就是函数)
+- 函子：是一个特殊的容器，通过一个普通的对象来实现，该对象具有 map 方法，map 方法可以运
+行一个函数对值进行处理(变形关系)
 
-- 你需要一些 [Markdown](https://www.jianshu.com/p/b03a8d7b1719) 语法的基础知识；
-- 你需要一个 [Github](https://github.com/) 账号，并在里面创建两个 repo；
-- Github 需要添加 ssh key，第一次使用的同学遇到问题可以百度解决；
-- 个人博客不只可以用来写技术相关的内容，也可以有自己写的文章、随笔，甚至上传一些照片。
+### Functor 函子
 
-我的 [vuepress-devkit](https://github.com/zhangyunchencc/vuepress-devkit.git) 已经开源放在了 Github 上，还有很多想要增加的功能，例如添加评论模块、自动生成侧边栏目录、增加网站分析工具等等，在这里欢迎大家 Star 或者 Fork 。
+```js
+// 一个容器，包裹一个值
+class Container {
+  // of 静态方法，可以省略 new 关键字创建对象
+  static of (value) {
+    return new Container(value)
+  }
+  constructor (value) {
+    this._value = value
+  }
+  // map 方法，传入变形关系，将容器里的每一个值映射到另一个容器
+  map (fn) {
+    return Container.of(fn(this._value))
+  }
+}
+// 测试
+Container.of(3)
+.map(x => x + 2)
+.map(x => x * x)
 
-以上，
+```
+总结
+- 函数式编程的运算不直接操作值，而是由函子完成
+- 函子就是一个实现了 map 契约的对象
+- 我们可以把函子想象成一个盒子，这个盒子里封装了一个值
+想要处理盒子中的值，我们需要给盒子的 map 方法传递一个处理值的函数（纯函数），由这
+个函数来对值进行处理
+最终 map 方法返回一个包含新值的盒子（函子）
 
-张韵晨 | Front End Engineer | 2018.10
+
+### MayBe 函子
+ - 我们在编程的过程中可能会遇到很多错误，需要对这些错误做相应的处理
+ - MayBe 函子的作用就是可以对外部的空值情况做处理（控制副作用在允许的范围）
+ - MayBe 函子 可以处理异常 我们很难确认是哪一步产生的空值问题
+
+```js
+// MayBe 函子
+class MayBe {
+  static of (value) {
+    return new MayBe(value)
+  }
+
+  constructor (value) {
+    this._value = value
+  }
+
+  map (fn) {
+    return this.isNothing() ? MayBe.of(null) : MayBe.of(fn(this._value))
+  }
+
+  isNothing () {
+    return this._value === null || this._value === undefined
+  }
+}
+
+
+// let r = MayBe.of('Hello World')
+//           .map(x => x.toUpperCase())
+// console.log(r)
+
+
+// let r = MayBe.of(null)
+//           .map(x => x.toUpperCase())
+// console.log(r)
+
+
+let r = MayBe.of('hello world')
+          .map(x => x.toUpperCase())
+          .map(x => null)
+          .map(x => x.split(' '))
+console.log(r)
+```
+
+
+#### 我们很难确认是哪一步产生的空值问题
+```js
+let r = MayBe.of('hello world')
+          .map(x => x.toUpperCase())
+          .map(x => null)
+          .map(x => x.split(' '))
+console.log(r)
+```
+
+### Either 函子
+- Either 两者中的任何一个，类似于 if...else...的处理
+- 异常会让函数变的不纯，Either 函子可以用来做异常处理
+- Either 用来处理异常
+
+
+```js
+// Either 函子 2. 异常会让函数变的不纯，Either 函子可以用来做异常处理
+class Left {
+  static of (value) {
+    return new Left(value)
+  }
+
+  constructor (value) {
+    this._value = value
+  }
+
+  map (fn) {
+    return this
+  }
+}
+
+class Right {
+  static of (value) {
+    return new Right(value)
+  }
+
+  constructor (value) {
+    this._value = value
+  }
+
+  map (fn) {
+    return Right.of(fn(this._value))
+  }
+}
+
+// let r1 = Right.of(12).map(x => x + 2)
+// let r2 = Left.of(12).map(x => x + 2)
+
+// console.log(r1)
+// console.log(r2)
+
+
+function parseJSON (str) {
+  try {
+    return Right.of(JSON.parse(str))
+  } catch (e) {
+    return Left.of({ error: e.message })
+  }
+}
+
+// let r = parseJSON('{ name: zs }')
+// console.log(r)
+//3. Either 用来处理异常
+let r = parseJSON('{ "name": "zs" }')
+          .map(x => x.name.toUpperCase())
+console.log(r)
+```
+
+
+###  IO 函子
+ - IO 函子中的 _value 是一个函数，这里是把函数作为值来处理
+ - IO 函子可以把不纯的动作存储到 _value 中，延迟执行这个不纯的操作(惰性执行)，包装当前的操
+ - 作纯
+把不纯的操作交给调用者来处理
+
+```js
+// IO 函子
+const fp = require('lodash/fp')
+
+class IO {
+  static of (value) {
+    return new IO(function () {
+      return value
+    })
+  }
+
+  constructor (fn) {
+    this._value = fn
+  }
+
+  map (fn) {
+    return new IO(fp.flowRight(fn, this._value))
+  }
+}
+
+// 调用
+let r = IO.of(process).map(p => p.execPath)
+// console.log(r)
+console.log(r._value())
+```
+
+
+### Task
+
+ #### Task 异步执行
+  - 异步任务的实现过于复杂，我们使用 folktale 中的 Task 来演示
+  - folktale 一个标准的函数式编程库
+    - 和 lodash、ramda 不同的是，他没有提供很多功能函数
+    - 只提供了一些函数式处理的操作，例如：compose、curry 等，一些函子 Task、Either、
+  MayBe 等
+
+  ```js
+  const { compose, curry } = require('folktale/core/lambda')
+  const { toUpper, first } = require('lodash/fp')
+  // 第一个参数是传入函数的参数个数
+  let f = curry(2, function (x, y) {
+  console.log(x + y)
+  })
+  f(3, 4)
+  f(3)(4)
+  // 函数组合
+  let f = compose(toUpper, first)
+  f(['one', 'two'])
+
+  ```
+
+
+
+### Pointed 函子
+Pointed 函子是实现了 of 静态方法的函子
+of 方法是为了避免使用 new 来创建对象，更深层的含义是 of 方法用来把值放到上下文
+Context（把值放到容器中，使用 map 来处理值）
+
+### Monad 函子
+Monad 函子是可以变扁的 Pointed 函子，IO(IO(x))
+一个函子如果具有 join 和 of 两个方法并遵守一些定律就是一个 Monad
+
+```js
+// IO Monad
+const fs = require('fs')
+const fp = require('lodash/fp')
+
+class IO {
+  static of (value) {
+    return new IO(function () {
+      return value
+    })
+  }
+
+  constructor (fn) {
+    this._value = fn
+  }
+
+  map (fn) {
+    return new IO(fp.flowRight(fn, this._value))
+  }
+
+  join () {
+    return this._value()
+  }
+
+  flatMap (fn) {
+    return this.map(fn).join()
+  }
+}
+
+let readFile = function (filename) {
+  return new IO(function () {
+    return fs.readFileSync(filename, 'utf-8')
+  })
+}
+
+let print = function (x) {
+  return new IO(function () {
+    console.log(x)
+    return x
+  })
+}
+
+let r = readFile('package.json')
+          // .map(x => x.toUpperCase())
+          .map(fp.toUpper)
+          .flatMap(print)
+          .join()
+
+console.log(r)
+```
+张小伟 | Front End Engineer | 2022.3.4
