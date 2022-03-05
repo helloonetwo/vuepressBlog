@@ -21,11 +21,19 @@ module.exports = {
       // 导航栏配置
       { text: "前端基础", link: "/accumulate/" },
       { text: "大前端", link: "/algorithm/" },
-      { text: "诗和远方", link: "/life/" },
+      { text: "手写源码", link: "/hand/" },
+      // {
+      //   text: "个人组件库",
+      //   link: "https://helloonetwo.github.io/xiao-ui-website",
+      // },
       {
-        text: "个人组件库",
-        link: "https://helloonetwo.github.io/xiao-ui-website",
-      },
+        text: '个人',
+        ariaLabel: '个人Menu',
+        items: [
+          { text: '个人组件库', link: 'https://helloonetwo.github.io/xiao-ui-website' },
+          { text: '个人工具类', link: 'https://www.npmjs.com/package/js-util-zhangxiaowei' }
+        ]
+      }
     ],
     sidebar: {
       "/accumulate/": [
@@ -52,6 +60,11 @@ module.exports = {
           title: "JavaScript 深度剖析",
           children: ["", "手写 Promie", "JS 异步编程", 'Event Loop.md'],
         },
+      ],
+      "/hand/": [
+        "",
+        "手写 Promie",
+        "手写 vue-router4"
       ],
     },
     sidebarDepth: 1,
