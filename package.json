@@ -7,12 +7,23 @@
     "start": "vuepress dev docs",
     "dev": "vuepress dev docs",
     "build": "vuepress build docs",
-    "deploy": "bash deploy.sh"
+    "deploy": "bash deploy.sh",
+    "giteedeploy": "bash giteedeploy.sh"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "vuepress": "^0.14.4"
+    "vuepress": "1.9.7"
+  },
+  "devDependencies": {
+    "@vuepress-reco/vuepress-plugin-bgm-player": "1.1.4",
+    "@vuepress-reco/vuepress-plugin-kan-ban-niang": "1.0.5",
+    "@vuepress/plugin-active-header-links": "1.9.7",
+    "@vuepress/plugin-back-to-top": "1.9.7",
+    "@vuepress/plugin-nprogress": "1.9.7",
+    "vuepress-plugin-copyright": "1.0.2",
+    "vuepress-plugin-cursor-effects": "1.1.2",
+    "vuepress-plugin-nuggets-style-copy": "1.0.3"
   }
 }
