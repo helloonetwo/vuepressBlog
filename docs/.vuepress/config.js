@@ -50,7 +50,7 @@ module.exports = {
         "/algorithm/",
         {
           title: "JavaScript 深度剖析",
-          children: ["", "手写 Promie", "JS 异步编程"],
+          children: ["", "手写 Promie", "JS 异步编程", 'Event Loop.md'],
         },
       ],
     },
@@ -74,19 +74,13 @@ module.exports = {
     [
       '@vuepress-reco/vuepress-plugin-kan-ban-niang',
       {
-        theme: ['blackCat', 'whiteCat', 'haru1', 'haru2', 'haruto', 'koharu', 'izumi', 'shizuku', 'wanko', 'miku', 'z16']
+        theme: ['koharu', 'blackCat', 'whiteCat', 'haru1', 'haru2', 'haruto', 'izumi', 'shizuku', 'wanko', 'miku', 'z16']
       }
     ],
     [
       '@vuepress-reco/vuepress-plugin-bgm-player',
       {
         audios: [
-          {
-            name: 'LOSER',
-            artist: '米津玄師',
-            url: 'https://www.ytmp3.cn/down/73654.mp3',
-            cover: 'https://p1.music.126.net/qTSIZ27qiFvRoKj-P30BiA==/109951165895951287.jpg?param=200y200'
-          },
           {
             name: '강남역 4번 출구',
             artist: 'Plastic / Fallin` Dild',
@@ -107,13 +101,6 @@ module.exports = {
         // 悬浮窗样式
         floatStyle: { bottom: '10px', 'z-index': '999999' }
       }
-    ],
-    [
-      'copyright',
-      {
-        authorName: '张晓伟·一点点', // 选中的文字将无法被复制
-        minLength: 30, // 如果长度超过  30 个字符
-      },
     ]
   ]
 };
