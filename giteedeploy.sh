@@ -10,16 +10,17 @@ npm run build
 cd docs/.vuepress/dist
 
 # # 如果是发布到自定义域名
-# echo 'gitee.onespot.website' > CNAME
+echo 'gitee.onespot.website' > CNAME
 
 git init
 git add -A
 git commit -m 'deploy'
 
 
-git remote add origin git@gitee.com:guangzhou110/guangzhou110.git
-git push -u origin "master"
+# git remote add origin git@gitee.com:guangzhou110/guangzhou110.git
+# git push -u origin "master"
 
+git push -f git@gitee.com:guangzhou110/guangzhou110.git master
 # 如果发布到 https://<USERNAME>.github.io/<REPO>  REPO=github上的项目
 # git push -f git@github.com:<USERNAME>/vuepress.git master:gh-pages
 

@@ -21,7 +21,7 @@ module.exports = {
       // 导航栏配置
       { text: "前端基础", link: "/accumulate/" },
       { text: "大前端", link: "/algorithm/" },
-      { text: "手写源码", link: "/hand/" },
+      { text: "源码系列", link: "/hand/" },
       // {
       //   text: "个人组件库",
       //   link: "https://helloonetwo.github.io/xiao-ui-website",
@@ -37,32 +37,17 @@ module.exports = {
     ],
     sidebar: {
       "/accumulate/": [
-        // {
-        //   title: '前端积累',
-        //   children: [
-        //     '/accumulate/1.html',
-        //     '/accumulate/2.html',
-        //     '/accumulate/3.html',
-        //     '/accumulate/4.html',
-        //     '/accumulate/5.html',
-        //     '/accumulate/6.html',
-        //     '/accumulate/7.html',
-        //     '/accumulate/8.html',
-        //     '/accumulate/9.html',
-        //     '/accumulate/10.html',
-        //     '/accumulate/11.html',
-        //   ]
-        // }
+        ""
       ],
       "/algorithm/": [
-        "/algorithm/",
         {
           title: "JavaScript 深度剖析",
-          children: ["", "手写 Promie", "JS 异步编程", 'Event Loop.md'],
+          children: ["", 'ECMAScript.md', "手写 Promie", "JS 异步编程", 'Event Loop.md'],
         },
       ],
       "/hand/": [
         "",
+        "call",
         "手写 Promie",
         "手写 vue-router4"
       ],
