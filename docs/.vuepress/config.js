@@ -42,7 +42,7 @@ module.exports = {
       "/algorithm/": [
         {
           title: "JavaScript 深度剖析",
-          children: ["", 'ECMAScript.md', "手写 Promie", "JS 异步编程", 'Event Loop.md', 'TypeScript.md'],
+          children: ["", 'ECMAScript.md', "手写 Promie", "JS 异步编程", 'Event Loop.md', 'TypeScript.md', 'javascript性能优化.md'],
         },
       ],
       "/hand/": [
