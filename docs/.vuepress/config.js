@@ -55,6 +55,7 @@ module.exports = {
     sidebarDepth: 1,
   },
   plugins: [
+    'reading-progress',
     '@vuepress/back-to-top',
     '@vuepress/nprogress',
     '@vuepress/active-header-links',
