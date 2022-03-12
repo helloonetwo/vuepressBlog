@@ -1,0 +1,370 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<meta http-equiv="X-UA-Compatible" content="IE10">
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"  />
+<title>代码片段_JavaScript性能优化1——内存管理（JS垃圾回收机制引用计数标记清除标记整理）</title>
+<meta name="description" content="目录一、导入二、内存管理1.JavaScript中的内存管理2.JavaScript中的垃圾回收概念可达对象引用样例可达样例3.GC算法介绍GC定义与作用GC里的垃圾是什么GC算法是什么常见GC算法3.1引用计数实现原理引用计数的优点引用计数的缺点什么是循环引用的对象3.2标记清除实现原理标记清除优点标记清除缺点3.3标记整理实现原理标记整理优点标记整理缺点一、导入随着我们JavaScript代码"/>
+<link rel="shortcut icon" type="image/x-icon" href="https://www.songbingjia.com/favicon.ico"/>
+<link rel="bookmark" type="image/x-icon" href="https://www.songbingjia.com/favicon.ico"/>
+<link rel="archives" title="IT知识库" href="https://www.songbingjia.com/archiver/"/>
+<link rel="stylesheet" href="https://www.songbingjia.com/skin/m03sred/static/css/css.css">
+<!--[if lte IE 6]>
+<link rel="stylesheet" type="text/css" href="https://www.songbingjia.com/skin/m03sred/ie6.css"/>
+<![endif]-->
+<script type="text/javascript" src="https://www.songbingjia.com/lang/zh-cn/lang.js"></script>
+<script type="text/javascript">
+var searchid = 121;
+</script>
+<script type="text/javascript">
+function removeElement(id)
+{
+document.getElementById(id).style.display="none";
+}
+</script>
+<style type="text/css">
+*{padding:0;margin:0}
+p{line-height:28px}
+.go{width:47px;height:106px;background-color:#FFF;position:fixed;_position:absolute;right:12px;bottom:25%;border-radius:5px;box-shadow:0 0 2px #6E6E6E}
+.go a{background:url(https://www.songbingjia.com/file/image/a.png) no-repeat;display:block;text-indent:999em;line-height:999px;width:37px;margin:5px;border:0;overflow:hidden;float:left}
+.go .top{background-position:0 -33px;height:22px}
+.go .feedback{background-position:0 -54px;height:32px}
+.go .bottom{background-position:0 -88px;height:22px}
+.go .top:hover{background-position:-38px -33px}
+.go .feedback:hover{background-position:-38px -54px}
+.go .bottom:hover{background-position:-38px -88px}
+</style> 
+</head>
+<body>
+       
+<script type="text/javascript">var searchid = 121;</script>
+<a name="gotop"></a><script type="text/javascript">var module_id= 121,item_id=159164,content_id='content',img_max_width=800;</script>
+<style>
+.answer-primary {
+    color: #fff;
+    background-color: #007bff;
+}
+.answer {
+    display: inline-block;
+    padding: .25em .4em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25rem;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+.content img{width:!00%;}
+</style>
+<div class="nav"> <a class="nav-item" href="/">首页</a> <a class="nav-item" href="https://www.songbingjia.com/jingpin/list-30254.html" title="精品阅读">精品阅读</a> <a class="nav-item" href="/tags/" title="搜索">搜索</a> </div>
+<div class="container grid-md s-content">
+            <div class="column col-12" style="background:#fff;border-radius:5px;padding:20px 15px;margin-bottom:20px">
+<article>
+               <span>   <a href="https://www.songbingjia.com/au/show-107640.html">JIZQAQ</a>  </span>  2021-06-15 <span>341次浏览</span>  <span><a style="color:#748594"  target="_blank" rel="nofollow" href="https://blog.csdn.net/qq_43106115/article/details/117418628">原文</a></span>                <h1>
+                    JavaScript性能优化1——内存管理（JS垃圾回收机制引用计数标记清除标记整理）                </h1>
+                <div class="content">
+<p>关键词: </p>
+
+ 
+<p>追风赶月莫停留，平芜尽处是春山。这篇文章主要讲述<strong>JavaScript性能优化1——内存管理（JS垃圾回收机制引用计数标记清除标记整理）</strong>相关的知识，希望能为你提供帮助。</p>
+<div id="article_content" class="article_content clearfix">
+        
+                <div id="content_views" class="htmledit_views">
+                    <p id="main-toc"><strong>目录</strong></p> 
+<p id="%E4%B8%80%E3%80%81%E5%AF%BC%E5%85%A5-toc" style="margin-left:0px;"><a href="#%E4%B8%80%E3%80%81%E5%AF%BC%E5%85%A5">一、导入</a></p> 
+<p id="%E4%BA%8C%E3%80%81%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86-toc" style="margin-left:0px;"><a href="#%E4%BA%8C%E3%80%81%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86">二、内存管理</a></p> 
+<p id="1.JavaScript%E4%B8%AD%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86-toc" style="margin-left:40px;"><a href="#1.JavaScript%E4%B8%AD%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86">1.JavaScript中的内存管理</a></p> 
+<p id="2.JavaScript%E4%B8%AD%E7%9A%84%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6-toc" style="margin-left:40px;"><a href="#2.JavaScript%E4%B8%AD%E7%9A%84%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6">2.JavaScript中的垃圾回收</a></p> 
+<p id="%E6%A6%82%E5%BF%B5-toc" style="margin-left:80px;"><a href="#%E6%A6%82%E5%BF%B5">概念</a></p> 
+<p id="%E5%8F%AF%E8%BE%BE%E5%AF%B9%E8%B1%A1-toc" style="margin-left:80px;"><a href="#%E5%8F%AF%E8%BE%BE%E5%AF%B9%E8%B1%A1">可达对象</a></p> 
+<p id="%E5%BC%95%E7%94%A8%E6%A0%B7%E4%BE%8B-toc" style="margin-left:80px;"><a href="#%E5%BC%95%E7%94%A8%E6%A0%B7%E4%BE%8B">引用样例</a></p> 
+<p id="%E5%8F%AF%E8%BE%BE%E6%A0%B7%E4%BE%8B-toc" style="margin-left:80px;"><a href="#%E5%8F%AF%E8%BE%BE%E6%A0%B7%E4%BE%8B">可达样例</a></p> 
+<p id="3.GC%E7%AE%97%E6%B3%95%E4%BB%8B%E7%BB%8D-toc" style="margin-left:40px;"><a href="#3.GC%E7%AE%97%E6%B3%95%E4%BB%8B%E7%BB%8D">3.GC算法介绍</a></p> 
+<p id="GC%E5%AE%9A%E4%B9%89%E4%B8%8E%E4%BD%9C%E7%94%A8-toc" style="margin-left:80px;"><a href="#GC%E5%AE%9A%E4%B9%89%E4%B8%8E%E4%BD%9C%E7%94%A8">GC定义与作用</a></p> 
+<p id="GC%E9%87%8C%E7%9A%84%E5%9E%83%E5%9C%BE%E6%98%AF%E4%BB%80%E4%B9%88-toc" style="margin-left:80px;"><a href="#GC%E9%87%8C%E7%9A%84%E5%9E%83%E5%9C%BE%E6%98%AF%E4%BB%80%E4%B9%88">GC里的垃圾是什么</a></p> 
+<p id="GC%E7%AE%97%E6%B3%95%E6%98%AF%E4%BB%80%E4%B9%88-toc" style="margin-left:80px;"><a href="#GC%E7%AE%97%E6%B3%95%E6%98%AF%E4%BB%80%E4%B9%88">GC算法是什么</a></p> 
+<p id="%E5%B8%B8%E8%A7%81GC%E7%AE%97%E6%B3%95-toc" style="margin-left:80px;"><a href="#%E5%B8%B8%E8%A7%81GC%E7%AE%97%E6%B3%95">常见GC算法</a></p> 
+<p id="3.1%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0-toc" style="margin-left:40px;"><a href="#3.1%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0">3.1引用计数</a></p> 
+<p id="%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86-toc" style="margin-left:80px;"><a href="#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86">实现原理</a></p> 
+<p id="%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%E7%9A%84%E4%BC%98%E7%82%B9-toc" style="margin-left:80px;"><a href="#%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%E7%9A%84%E4%BC%98%E7%82%B9">引用计数的优点</a></p> 
+<p id="%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%E7%9A%84%E7%BC%BA%E7%82%B9-toc" style="margin-left:80px;"><a href="#%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%E7%9A%84%E7%BC%BA%E7%82%B9">引用计数的缺点</a></p> 
+<p id="%E4%BB%80%E4%B9%88%E6%98%AF%E5%BE%AA%E7%8E%AF%E5%BC%95%E7%94%A8%E7%9A%84%E5%AF%B9%E8%B1%A1-toc" style="margin-left:80px;"><a href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%BE%AA%E7%8E%AF%E5%BC%95%E7%94%A8%E7%9A%84%E5%AF%B9%E8%B1%A1">什么是循环引用的对象</a></p> 
+<p id="3.2%E6%A0%87%E8%AE%B0%E6%B8%85%E9%99%A4-toc" style="margin-left:40px;"><a href="#3.2%E6%A0%87%E8%AE%B0%E6%B8%85%E9%99%A4">3.2标记清除</a></p> 
+<p style="margin-left:80px;"><a href="#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86">实现原理</a></p> 
+<p id="%E6%A0%87%E8%AE%B0%E6%B8%85%E9%99%A4%E4%BC%98%E7%82%B9-toc" style="margin-left:80px;"><a href="#%E6%A0%87%E8%AE%B0%E6%B8%85%E9%99%A4%E4%BC%98%E7%82%B9">标记清除优点</a></p> 
+<p id="%E6%A0%87%E8%AE%B0%E6%B8%85%E9%99%A4%E7%BC%BA%E7%82%B9-toc" style="margin-left:80px;"><a href="#%E6%A0%87%E8%AE%B0%E6%B8%85%E9%99%A4%E7%BC%BA%E7%82%B9">标记清除缺点</a></p> 
+<p id="3.3%E6%A0%87%E8%AE%B0%E6%95%B4%E7%90%86-toc" style="margin-left:40px;"><a href="#3.3%E6%A0%87%E8%AE%B0%E6%95%B4%E7%90%86">3.3标记整理</a></p> 
+<p style="margin-left:80px;"><a href="#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86">实现原理</a></p> 
+<p id="%E6%A0%87%E8%AE%B0%E6%95%B4%E7%90%86%E4%BC%98%E7%82%B9-toc" style="margin-left:80px;"><a href="#%E6%A0%87%E8%AE%B0%E6%95%B4%E7%90%86%E4%BC%98%E7%82%B9">标记整理优点</a></p> 
+<p id="%E6%A0%87%E8%AE%B0%E6%95%B4%E7%90%86%E7%BC%BA%E7%82%B9-toc" style="margin-left:80px;"><a href="#%E6%A0%87%E8%AE%B0%E6%95%B4%E7%90%86%E7%BC%BA%E7%82%B9">标记整理缺点</a></p> 
+<hr id="hr-toc" />
+<h1 id="%E4%B8%80%E3%80%81%E5%AF%BC%E5%85%A5">一、导入</h1> 
+<p>随着我们<a href="https://www.songbingjia.com/javascript/" target="_blank"><strong class="keylink">javascript</strong></a>代码需要实现的功能越来越复杂&#xff0c;性能优化变得重要了起来。那么哪些内容可以被看做是性能优化呢&#xff1f;本质上来说&#xff0c;任何一种提高运行效率&#xff0c;降低运行开销的行为都可以看做是优化操作。</p> 
+<p>前端优化无处不在&#xff0c;例如请求资源时候用到的网络、数据的传输方式、开发过程中使用的框架等。本阶段讨论的核心是<a href="https://www.songbingjia.com/java/" target="_blank"><strong class="keylink">java</strong></a>Script语言本身的优化&#xff0c;也就是从认知内存空间的实用到垃圾回收的方式介绍。从而让我们编写出高效的JavaScript代码。</p> 
+<p>在这篇文章里&#xff0c;主要讨论内存管理相关的内容。</p> 
+<p>随着这些年来的硬件不断发展&#xff0c;同时高级编程语言当中都自带GC机制&#xff0c;这些变化都让我们可以在不需要过多注意内存空间的使用下&#xff0c;也能正常完成相应的功能开发。</p> 
+<h1 id="%E4%BA%8C%E3%80%81%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86">二、内存管理</h1> 
+<ul><li>内存&#xff1a;由可读写单元组成&#xff0c;表示一篇可操控空间</li><li>管理&#xff1a;人为的去操作一片空间的申请、使用和释放</li><li>内存管理&#xff1a;开发者主动申请空间、使用空间、释放空间</li></ul>
+<h2 id="1.JavaScript%E4%B8%AD%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86">1.JavaScript中的内存管理</h2> 
+<p>分为下面三个步骤</p> 
+<ul><li>申请内存空间</li><li>使用内存空间</li><li>释放内存空间</li></ul>
+<pre><code class="language-javascript">//DEMO2
+// Memory management
+// 申请
+let obj &#61; {}
+// 使用
+obj.name &#61; &#39;lg&#39;
+// 释放 js中没有释放api&#xff0c;我们这里就把它设置为null
+obj &#61; null
+</code></pre> 
+<h2 id="2.JavaScript%E4%B8%AD%E7%9A%84%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6">2.JavaScript中的垃圾回收</h2> 
+<h3 id="%E6%A6%82%E5%BF%B5">概念</h3> 
+<p>对我们前端而言JS的内存管理是自动的&#xff0c;每次我们创建一个对象、数组、函数的时候会自动分配一个内存空间。</p> 
+<p>那么什么是垃圾呢&#xff1f;</p> 
+<ul><li>对象不再被引用的时候就是垃圾</li><li>对象不能从根上访问到的时候也是垃圾。</li></ul>
+<p>知道什么是垃圾之后&#xff0c;JS引擎就会出来工作&#xff0c;把它们占据的对象空间进行回收&#xff0c;这就叫做JS的垃圾回收。</p> 
+<p>下面我们引入一个概念&#xff0c;叫<strong>可达对象</strong></p> 
+<h3 id="%E5%8F%AF%E8%BE%BE%E5%AF%B9%E8%B1%A1"><strong>可达对象</strong></h3> 
+<ul><li>可以访问到的对象就是可达对象&#xff08;引用、作用域链&#xff09;</li><li>可达的标准就是从根出发是否能够被找到</li><li>JavaScript中的根就可以理解为是全局变量对象</li></ul>
+<p>接下来我们在代码中看一下JS的引用和可达是什么样的</p> 
+<h3 id="%E5%BC%95%E7%94%A8%E6%A0%B7%E4%BE%8B">引用样例</h3> 
+<pre><code class="language-javascript">// reference
+let obj &#61; {name: &#39;xm&#39;}// 这里就发生了引用&#xff0c;obj也是可达的&#xff0c;xm空间也是可达的
+
+let ali &#61; obj // xm空间又多了一次引用
+
+obj &#61; null // obj引用xm的这条路断了&#xff0c;但是xm空间还是可达的&#xff0c;因为ali还在引用xm空间
+
+console.log(ali)//打印{ name: &#39;xm&#39; }</code></pre> 
+<h3 id="%E5%8F%AF%E8%BE%BE%E6%A0%B7%E4%BE%8B">可达样例</h3> 
+<p>先看一下下面这段代码</p> 
+<pre><code class="language-javascript">//DEMO4
+//可达对象
+//我们定义了一个函数去接收两个变量obj1&#xff0c;obj2&#xff0c;互相指引
+function objGroup(obj1,obj2) {
+    obj1.next &#61; obj2
+    obj2.prev &#61; obj1
+    return {
+        o1:obj1,
+        o2:obj2
+    }
+
+}
+let obj &#61; objGroup({name:&#39;obj1&#39;},{name:&#39;obj2&#39;})
+console.log(obj)</code></pre> 
+<p><img alt="" height="364" src="https://img.songbingjia.com/20210615/19d5936f58f64428bf29e84b405faf99.jpg" width="1004" /></p> 
+<p>说明&#xff1a;</p> 
+<p>首先从全局的根出发&#xff0c;我们能找到一个可达的对象obj&#xff0c;它是通过一个函数调用之后&#xff0c;指向了一个内存空间&#xff08;里面就是o1和o2&#xff09;&#xff0c;又通过相应的属性指向obj1和obj2的空间&#xff0c;这两个空间之间通过next和prev互相指向。</p> 
+<p>所以在这个例子里面&#xff0c;我们能从根访问到任何一个内存空间。</p> 
+<p><img alt="" height="552" src="https://img.songbingjia.com/20210615/5b5e4f66de4444119661c4b402e196f3.jpg" width="1000" /></p> 
+<p>然后我们删除掉两行代码之后</p> 
+<pre><code class="language-javascript">function objGroup(obj1,obj2) {
+    obj1.next &#61; obj2
+    //obj2.prev &#61; obj1
+    return {
+        //o1:obj1,
+        o2:obj2
+    }
+
+}
+let obj &#61; objGroup({name:&#39;obj1&#39;},{name:&#39;obj2&#39;})
+console.log(obj)</code></pre> 
+<p>这之后&#xff0c;我们所有能够找到obj1的线条都被删除了&#xff0c;于是obj1空间就会被认为是垃圾&#xff0c;js引擎就会找到它把它删除。</p> 
+<p><img alt="" height="572" src="https://img.songbingjia.com/20210615/15ec35655286462b9c6be66779fc2b7b.jpg" width="959" /></p> 
+<h2 id="3.GC%E7%AE%97%E6%B3%95%E4%BB%8B%E7%BB%8D">3.GC算法介绍</h2> 
+<h3 id="GC%E5%AE%9A%E4%B9%89%E4%B8%8E%E4%BD%9C%E7%94%A8">GC定义与作用</h3> 
+<ul><li>GC就是垃圾回收机制的简写</li><li>GC可以找到内存中的垃圾、并释放和回收空间。</li></ul>
+<h3 id="GC%E9%87%8C%E7%9A%84%E5%9E%83%E5%9C%BE%E6%98%AF%E4%BB%80%E4%B9%88">GC里的垃圾是什么</h3> 
+<ul><li>程序中不再需要使用的对象&#xff08;下面例子里的name&#xff09;</li></ul>
+<p><img alt="" height="207" src="https://img.songbingjia.com/20210615/ef50fcac56094d21854737a41fa74a62.jpg" width="500" /></p> 
+<ul><li>程序中不能再访问到的对象&#xff08;下面例子里的name&#xff09;</li></ul>
+<p><img alt="" height="212" src="https://img.songbingjia.com/20210615/4b0657f58c2f464ab015220f873f2569.jpg" width="500" /></p> 
+<h3 id="GC%E7%AE%97%E6%B3%95%E6%98%AF%E4%BB%80%E4%B9%88">GC算法是什么</h3> 
+<ul><li>GC是一种机制&#xff0c;垃圾回收器完成具体的工作</li><li>工作的内容就是查找垃圾释放空间、回收空间</li><li>算法就是工作时查找和挥手所遵循的规则</li></ul>
+<h3 id="%E5%B8%B8%E8%A7%81GC%E7%AE%97%E6%B3%95">常见GC算法</h3> 
+<ul><li>引用计数&#xff1a;通过一个数字判断当前的是不是垃圾</li><li>标记清除&#xff1a;进行工作的时候给到活动对象添加一个标记&#xff0c;判断是否垃圾</li><li>标记整理&#xff1a;和标记清除类似&#xff0c;回收过程中做的事情不太一样</li><li>分代回收&#xff1a;不同生命周期的对象可以采取不同的收集方式&#xff0c;以便提高回收效率</li></ul>
+<h2 id="3.1%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0">3.1引用计数</h2> 
+<h3 id="%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86">实现原理</h3> 
+<p>核心思想&#xff1a;设置应用数&#xff0c;判断当前引用数是否为0&#xff0c;从而判断是否垃圾对象。数字为0&#xff0c;GC开始工作&#xff0c;将其所在的对象空间回收再释放使用。</p> 
+<p>引用关系发生改变的时候&#xff0c;引用计数器会主动去修改引用数值。引用数字为0的时候立刻回收。</p> 
+<pre><code class="language-javascript">//DEMO4
+//GC 引用计数
+const user1 &#61; {age:11}
+const user2 &#61; {age:22}
+const user3 &#61; {age:33}
+
+const nameList &#61; [user1.age,user2.age,user3.age]
+
+function fn() {
+    // 当加上const之后&#xff0c;num1作用域变了&#xff0c;一旦fn()结束之后&#xff0c;我们就再也找不到num1了&#xff0c;引用计数为0&#xff0c;gc就会吧num1的内存空间回收
+    const num1 &#61; 1 
+    num2 &#61; 2
+}
+
+fn()</code></pre> 
+<p>总结&#xff1a;</p> 
+<p>靠着我们当前对象身上引用计数器的数值是否为0&#xff0c;从而决定它是不是垃圾对象。 </p> 
+<h3 id="%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%E7%9A%84%E4%BC%98%E7%82%B9">引用计数的优点</h3> 
+<ul><li>发现垃圾时立即回收</li><li>最大限度减少程序暂停&#xff08;当内存快满的时候就立刻去找引用计数为0的删掉&#xff09;</li></ul>
+<h3 id="%E5%BC%95%E7%94%A8%E8%AE%A1%E6%95%B0%E7%9A%84%E7%BC%BA%E7%82%B9">引用计数的缺点</h3> 
+<ul><li>无法回收循环引用的对象</li><li>时间开销大&#xff08;因为要时刻监控数值的修改&#xff09;</li></ul>
+<h3 id="%E4%BB%80%E4%B9%88%E6%98%AF%E5%BE%AA%E7%8E%AF%E5%BC%95%E7%94%A8%E7%9A%84%E5%AF%B9%E8%B1%A1">什么是循环引用的对象</h3> 
+<pre><code class="language-javascript">//DEMO5
+//对象之间的循环引用
+//虽然obj1和obj2全局作用域下找不到了&#xff0c;但是引用还存在的&#xff0c;obj1和obj2互相在他们的作用域内引用
+//用引用计数算法无法释放这部分空间。
+function fn() {
+    const obj1 &#61; {}
+    const obj2 &#61; {}
+
+    obj1.name &#61; obj2
+    obj2.name &#61; obj1
+
+    return &#39;hello world&#39;
+}
+
+fn()</code></pre> 
+<h2 id="3.2%E6%A0%87%E8%AE%B0%E6%B8%85%E9%99%A4">3.2标记清除</h2> 
+<h3>实现原理</h3> 
+<p>这个原理实现要比引用计数算法更加简单&#xff0c;还能解决一些问题。在后续学习的v8当中会被大量用到。</p> 
+<p>核心思想&#xff1a;将整个垃圾回收操作分成标记和清楚两个阶段完成。第一个阶段会遍历所有对象&#xff0c;找到活动对象标记。第二个阶段仍然遍历所有对象&#xff0c;把那些身上没有标记的对象进行清除。还会把第一个阶段的标记抹掉&#xff0c;便于GC下次正常工作。通过两次遍历行为&#xff0c;把我们当前的垃圾空间进行回收&#xff0c;最终交给相应的空闲列表去维护。</p> 
+<p>通过下面图片举例说明一下&#xff1a;</p> 
+<p>在全局的地方&#xff0c;我们可以找到A、B、C三个可达对象&#xff0c;如果发现他们的下边有child&#xff0c;或者child还有child&#xff0c;它会使用递归的方式去寻找可达对象。所以D、E也会被做上可达标记。从global的链条下是找不到a1&#xff0c;b1的&#xff0c;所以GC工作的时候会认为a1、b1是垃圾&#xff0c;把它清除掉&#xff0c;并且把可达标记都清除掉。要注意最终还会把回收的空间放在一个空闲列表上面&#xff0c;方便后面的程序直接申请空间使用。</p> 
+<p><img alt="" height="866" src="https://img.songbingjia.com/20210615/194807c47f9545b1b4ffa2cae3353bb3.jpg" width="1200" /></p> 
+<h3 id="%E6%A0%87%E8%AE%B0%E6%B8%85%E9%99%A4%E4%BC%98%E7%82%B9">标记清除优点</h3> 
+<p>可以解决对象循环引用的回收操作</p> 
+<h3 id="%E6%A0%87%E8%AE%B0%E6%B8%85%E9%99%A4%E7%BC%BA%E7%82%B9">标记清除缺点</h3> 
+<p>如图显示&#xff0c;左右两侧有从根无法被查找的区域&#xff0c;这种情况下在第二轮进行清除操作的时候&#xff0c;就会直接吧两侧对应的空间回收&#xff0c;然后把释放的空间添加到空闲链表之上。紧接着后续的程序进来&#xff0c;在空闲链表上申请空间。</p> 
+<p>但是我们从图片上看得到&#xff0c;即时左右两边的空间被释放&#xff0c;但是他们这两块空间被中间的内容给分割着&#xff0c;空出来的内存<u><strong>地址不连续</strong></u>&#xff0c;是分散的。假如如图的例子&#xff0c;左侧空出2个空间&#xff0c;右侧空出1个空间&#xff0c;而我们想要申请一个1.5的空间。我们申请左侧呢&#xff0c;就会空余0.5个空间&#xff0c;而右边空间又不足。</p> 
+<p>这就是标记清除最大的问题&#xff0c;会造成<u><strong>空间碎片化</strong></u>&#xff0c;不能让我们空间最大化使用。</p> 
+<p><u><strong>标记清除不会立即回收垃圾对象。</strong></u></p> 
+<p><img alt="" height="758" src="https://img.songbingjia.com/20210615/97aa4bd1ca164288b6ba01c4f56a3dc3.jpg" width="1200" /></p> 
+<h2 id="3.3%E6%A0%87%E8%AE%B0%E6%95%B4%E7%90%86">3.3标记整理</h2> 
+<h3>实现原理</h3> 
+<p>标记整理可以看作是标记清除的增强操作&#xff0c;他在标记阶段的操作和标记清除一致&#xff0c;但是清楚阶段会先执行整理&#xff0c;移动对象位置。</p> 
+<p>下面用图片来更好的 解释一下标记整理回收阶段的过程。</p> 
+<p>回收之前我们内存摆放位置如下&#xff0c;有着很多活动对象、非活动对象和空闲的空间&#xff0c;当他去执行当前标记操作的时候&#xff0c;会把所有的活动对象进行标记&#xff0c;紧接着会去进行一个整理的操作。</p> 
+<p><img alt="" height="313" src="https://img.songbingjia.com/20210615/59212439a64d41e4af2b8c4064d3e688.jpg" width="500" /></p> 
+<p>整理会把我们的活动对象进行移动&#xff0c;在地址上变成连续的位置&#xff0c;紧接着将当前活动对象右侧的范围进行回收。</p> 
+<p><img alt="" height="291" src="https://img.songbingjia.com/20210615/105227fb4520410ebc946862af56a6a4.jpg" width="500" /></p> 
+<p>回收之后大概长下面的样子&#xff0c;现在回收到的空间基本上都是连续的&#xff0c;后续可以最大化利用内存释放出来的空间。它会配合着标记清除&#xff0c;在我们的V8引擎当中配合实现频繁的GC操作。</p> 
+<p><img alt="" height="333" src="https://img.songbingjia.com/20210615/2d40b7bb412141c1b5bbc5da9e62791c.jpg" width="500" /></p> 
+<h3 id="%E6%A0%87%E8%AE%B0%E6%95%B4%E7%90%86%E4%BC%98%E7%82%B9">标记整理优点</h3> 
+<p>减少碎片化空间</p> 
+<h3 id="%E6%A0%87%E8%AE%B0%E6%95%B4%E7%90%86%E7%BC%BA%E7%82%B9">标记整理缺点</h3> 
+<p>不会立即回收垃圾对象</p> 
+<p> </p> 
+<p> </p>
+                </div>
+        </div><p>到此这篇关于JavaScript性能优化1——内存管理（JS垃圾回收机制引用计数标记清除标记整理）内容已经讲完，如果未能解决您的问题，请参考下面的文章：</p>
+</div>
+<h3>相关文章</h3>
+<blockquote>
+               <p  ><a href="https://www.songbingjia.com/tech/show-828589.html">垃圾回收</a></p>
+               <p  ><a href="https://www.songbingjia.com/nginx/show-238768.html">怎么查看每个网页的内存问题</a></p>
+               <p  ><a href="https://www.songbingjia.com/nginx/show-275240.html">JavaScript性能优化方案，你知道几个？</a></p>
+               <p  ><a href="https://www.songbingjia.com/tech/show-149062.html">JavaScript性能优化之事件委托</a></p>
+               <p  ><a href="https://www.songbingjia.com/jingpin/show-99760.html">Web性能优化系列：10个JavaScript性能提升的技巧</a></p>
+               <p  ><a href="https://www.songbingjia.com/tech/show-69021.html">javacript 优化2</a></p>
+               <p  ><a href="https://www.songbingjia.com/tech/show-1291703.html">JS性能优化——数据存取</a></p>
+               <p  ><a href="https://www.songbingjia.com/shida/show-16868.html">总结的js性能优化的小知识</a></p>
+</blockquote>
+
+</article>
+            </div>
+    
+ </div>
+     
+<script type="text/javascript" src="https://www.songbingjia.com/skin/m03sred/style/js/fixit.js"></script>
+<script type="text/javascript" src="https://www.songbingjia.com/file/script/content.js"></script><footer>
+<div>
+侵权删除邮箱：jingkangznn@qq.com
+</div>
+<div>
+&copy; 2021
+<a href="https://www.songbingjia.com">IT知识库</a>
+
+<a href="https://www.songbingjia.com/tech/" title="技术">技术</a>
+<a href="https://www.songbingjia.com/python/" title="Python">Python</a>
+<a href="https://www.songbingjia.com/php/" title="PHP">PHP</a>
+<a href="https://www.songbingjia.com/javascript/" title="JavaScript">JavaScript</a>
+<a href="https://www.songbingjia.com/ios/" title="IOS">IOS</a>
+<a href="https://www.songbingjia.com/android/" title="Android">Android</a>
+<a href="https://www.songbingjia.com/java/" title="Java">Java</a>
+<a href="https://www.songbingjia.com/html/" title="html">html</a>
+<a href="https://www.songbingjia.com/mysql/" title="数据库">数据库</a>
+<a href="https://www.songbingjia.com/nginx/" title="web服务器">web服务器</a>
+<a href="https://www.songbingjia.com/shida/" title="资源">资源</a>
+<a href="https://www.songbingjia.com/jingpin/" title="公众号">公众号</a>
+<a href="https://beian.miit.gov.cn/" target="_blank"> 
+ 陕ICP备18005036号
+</a>
+</div>
+<a name="gobottom"></a>
+</footer>
+<div class="go">
+<a title="返回顶部" class="top" href="#gotop">至顶</a>
+<a title="返回首页" class="feedback" href="https://www.songbingjia.com" target="_blank">首页</a>
+<a title="返回底部" class="bottom" href="#gobottom">至底</a>
+</div>
+<script>
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https'){
+   bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+  }
+  else{
+  bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+  }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
+</script>
+<script src="https://www.songbingjia.com/skin/m03sred//js/function.min.js"></script>
+<script src="https://www.songbingjia.com/skin/m03sred//js/jquery-2.1.1.min.js"></script>
+<link href="https://www.songbingjia.com/skin/m03sred/static/css/styles.css" rel="stylesheet">
+<script src="https://www.songbingjia.com/skin/m03sred//js/prism.min.js"></script>
+<script src="https://www.songbingjia.com/skin/m03sred//js/fastclick.min.js"></script>
+<script src="https://www.songbingjia.com/skin/m03sred//js/jquery.poptrox.min.js"></script>
+<script>
+$(document).ready(function() {
+$(".content img").each(function() {
+var a = "<a href='" + this.src + "' class='image'></a>";
+$(this).wrapAll(a)
+})
+});
+$(function() {
+var a = $(".content");
+a.poptrox({
+usePopupCaption: !1,
+selector: "a.image",
+usePopupCloser: false,
+windowMargin: 0,
+overlayColor: "#FFF",
+overlayOpacity: 1,
+popupSpeed: 0
+})
+});
+</script>
+<script>
+$('article .content a').each(function() {　　　　$(this).attr("target", "_blank");　　
+});
+</script>
+<script async="" src="https://www.songbingjia.com/skin/m03sred//js/js.js">
+</script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag() {
+dataLayer.push(arguments);
+}
+gtag('js', new Date());
+gtag('config', 'UA-87357644-1');
+</script>
+
+</body>
+</html>
