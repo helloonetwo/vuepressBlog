@@ -49,7 +49,8 @@ module.exports = {
           title: "前端工程化实战",
           collapsable: true,
           children: [
-            '脚手架工具.md'
+            '脚手架工具.md',
+            '自动化构建.md'
           ],
         },
       ],
