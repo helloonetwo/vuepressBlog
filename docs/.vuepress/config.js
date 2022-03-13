@@ -31,7 +31,8 @@ module.exports = {
         ariaLabel: '个人Menu',
         items: [
           { text: '个人组件库', link: 'https://helloonetwo.github.io/xiao-ui-website' },
-          { text: '个人工具类', link: 'https://www.npmjs.com/package/js-util-zhangxiaowei' }
+          { text: '个人工具类', link: 'https://www.npmjs.com/package/js-util-zhangxiaowei' },
+          { text: 'vue脚手架', link: 'https://www.npmjs.com/package/generator-zxw-vue' }
         ]
       }
     ],
@@ -46,7 +47,10 @@ module.exports = {
         },
         {
           title: "前端工程化实战",
-          children: ["", 'ECMAScript.md', "手写 Promie", "JS 异步编程", 'Event Loop.md', 'TypeScript.md', 'javascript性能优化.md'],
+          collapsable: true,
+          children: [
+            '脚手架工具.md'
+          ],
         },
       ],
       "/hand/": [
