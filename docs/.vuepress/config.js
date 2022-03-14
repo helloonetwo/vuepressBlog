@@ -32,7 +32,8 @@ module.exports = {
         items: [
           { text: '个人组件库', link: 'https://helloonetwo.github.io/xiao-ui-website' },
           { text: '个人工具类', link: 'https://www.npmjs.com/package/js-util-zhangxiaowei' },
-          { text: 'vue脚手架', link: 'https://www.npmjs.com/package/generator-zxw-vue' }
+          { text: 'vue脚手架', link: 'https://www.npmjs.com/package/generator-zxw-vue' },
+          { text: '自动化构建工作流', link: 'https://www.npmjs.com/package/zxw-pages' }
         ]
       }
     ],
@@ -50,7 +51,8 @@ module.exports = {
           collapsable: true,
           children: [
             '脚手架工具.md',
-            '自动化构建.md'
+            '自动化构建.md',
+            '模块化开发.md'
           ],
         },
       ],
