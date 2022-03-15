@@ -21,6 +21,7 @@ module.exports = {
       // 导航栏配置
       { text: "前端基础", link: "/accumulate/" },
       { text: "大前端", link: "/algorithm/" },
+      { text: "系统分析师", link: "/system/" },
       { text: "源码系列", link: "/hand/" },
       // {
       //   text: "个人组件库",
@@ -38,8 +39,9 @@ module.exports = {
       }
     ],
     sidebar: {
-      "/accumulate/": [
-        ""
+      "/system/": [
+        "",
+        "计算机组成与系统.md"
       ],
       "/algorithm/": [
         {
@@ -52,7 +54,8 @@ module.exports = {
           children: [
             '脚手架工具.md',
             '自动化构建.md',
-            '模块化开发.md'
+            '模块化开发.md',
+            '规范化标准.md'
           ],
         },
       ],
