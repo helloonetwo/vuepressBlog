@@ -526,101 +526,91 @@ new Vue({
 ```js
 // src/vuerouter/index.js
 
-let \_Vue = null
-
-export default class VueRouter {
-static install (Vue) {
-// 1.判断当前插件是否已经被安装
-// 如果插件已经安装直接返回
-if (VueRouter.install.installed && \_Vue === Vue) return
-VueRouter.install.installed = true
-// 2.把 Vue 构造函数记录到全局变量
-\_Vue = Vue
-// 3.把创建 Vue 实例时候传入的 router 对象注入到 Vue 实例上
-// 混入
-\_Vue.mixin({
-beforeCreate () {
-// 判断 router 对象是否已经挂载了 Vue 实例上
-if (this.$options.router) {
-          // 把 router 对象注入到 Vue 实例上
-          _Vue.prototype.$router = this.$options.router
-          this.$options.router.init()
-}
-}
-})
-}
-
-constructor (options) {
-this.options = options
-// 记录路径和对应的组件
-this.routeMap = {}
-this.data = \_Vue.observable({
-// 当前的默认路径
-current: '/'
-})
-}
-
-init () {
-this.createRouteMap()
-this.initComponents(\_Vue)
-this.initEvent()
-}
-
-createRouteMap () {
-// routes => [{ name: '', path: '', component: }]
-// 遍历所有的路由信息，记录路径和组件的映射
-this.options.routes.forEach(route => {
-// 记录路径和组件的映射关系
-this.routeMap[route.path] = route.component
-})
-}
-
-initComponents (Vue) {
-\_Vue.component('router-link', {
-// 接收外部传入的参数
-props: {
-to: String
-},
-// 使用运行时版本的 Vue.js
-// 此时没有编译器 直接来写一个 render 函数
-render (h) { // 参数 h 创建虚拟 DOM render 函数中调用 h 函数并将结果返回
-// h 函数 接收三个参数
-return h('a', { // 1. 创建的元素对应的选择器
-attrs: { // 2. 给标签设置属性 attes 指明 DOM 对象属性
-href: this.to
-},
-on:{ // 给 a 标签 注册点击事件
-click:this.clickhander
-}
-}, [this.$slots.default]) // 3. 生成元素的子元素
-},
-methods:{
-clickhander(e){ //时间参数 e
-// 改变浏览器地址栏 pushiState 不向服务器发送请求
-history.pushState({}, "", this.to) // data title url
-this.$router.data.current = this.to // 响应式对象 data
-e.preventDefault() // 阻止事件默认行为
-}
-}
-// template: '<a :href="to"><slot></slot></a>'
-})
-
-    const self = this // 保存 this
-    _Vue.component('router-view', {
-      render (h) {
-        // 根据当前路径找到对应的组件，注意 this 的问题
-        const component = self.routeMap[self.data.current]
-        return h(component) // 将组件转换为虚拟DOM返回
-      }
-    })
-
-}
-
-initEvent(){
-window.addEventListener("popstate", () => {
-this.data.current = window.location.pathname
-})
-}
+console.dir(Vue);
+let _Vue = null;
+class VueRouter {
+  static install(Vue) {
+    //1 判断当前插件是否被安装
+    if (VueRouter.install.installed) {
+      return;
+    }
+    VueRouter.install.installed = true;
+    //2 把Vue的构造函数记录在全局
+    _Vue = Vue;
+    //3 把创建Vue的实例传入的router对象注入到Vue实例
+    // _Vue.prototype.$router = this.$options.router
+    _Vue.mixin({
+      // beforeCreate 获取到this  实例
+      beforeCreate() {
+        if (this.$options.router) {
+          _Vue.prototype.$router = this.$options.router;
+        }
+      },
+    });
+  }
+  constructor(options) {
+    this.options = options;
+    this.routeMap = {};
+    // observable
+    this.data = _Vue.observable({
+      current: "/",
+    });
+    this.init();
+  }
+  init() {
+    this.createRouteMap();
+    this.initComponent(_Vue);
+    this.initEvent();
+  }
+  createRouteMap() {
+    //遍历所有的路由规则 吧路由规则解析成键值对的形式存储到routeMap中
+    this.options.routes.forEach((route) => {
+      this.routeMap[route.path] = route.component;
+    });
+  }
+  initComponent(Vue) {
+    Vue.component("router-link", {
+      props: {
+        to: String,
+      },
+      render(h) {
+        return h(
+          "a",
+          {
+            attrs: {
+              href: this.to,
+            },
+            on: {
+              click: this.clickhander,
+            },
+          },
+          [this.$slots.default]
+        );
+      },
+      methods: {
+        clickhander(e) {
+          history.pushState({}, "", this.to);
+          this.$router.data.current = this.to;
+          e.preventDefault();
+        },
+      },
+      // template:"<a :href='to'><slot></slot><>"
+    });
+    const self = this;
+    Vue.component("router-view", {
+      render(h) {
+        // self.data.current
+        const cm = self.routeMap[self.data.current];
+        return h(cm);
+      },
+    });
+  }
+  initEvent() {
+    //
+    window.addEventListener("popstate", () => {
+      this.data.current = window.location.pathname;
+    });
+  }
 }
 ```
 
