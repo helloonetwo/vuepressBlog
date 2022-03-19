@@ -55,7 +55,17 @@ module.exports = {
             '脚手架工具.md',
             '自动化构建.md',
             '模块化开发.md',
-            '规范化标准.md'
+            '规范化标准.md',
+            'Rollup、Parcel 打包.md'
+          ],
+        },
+        {
+          title: "Vue.js 框架源码与进阶",
+          collapsable: true,
+          children: [
+            '手写 Vue Router.md',
+            '手写响应式实现.md',
+            '手写虚拟 DOM 和 Diff 算法.md'
           ],
         },
       ],
