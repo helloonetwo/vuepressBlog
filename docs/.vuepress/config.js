@@ -23,6 +23,7 @@ module.exports = {
       { text: "大前端", link: "/algorithm/" },
       { text: "系统分析师", link: "/system/" },
       { text: "源码系列", link: "/hand/" },
+      { text: "设计模式", link: "/mode/" },
       // {
       //   text: "个人组件库",
       //   link: "https://helloonetwo.github.io/xiao-ui-website",
@@ -42,6 +43,10 @@ module.exports = {
       "/system/": [
         "",
         "计算机组成与系统.md"
+      ],
+      "/mode/": [
+        "",
+        "设计模式.md"
       ],
       "/algorithm/": [
         {
