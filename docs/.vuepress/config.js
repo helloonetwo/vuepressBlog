@@ -61,6 +61,7 @@ module.exports = {
             '自动化构建.md',
             '模块化开发.md',
             '规范化标准.md',
+            'WebPack.md',
             'Rollup、Parcel 打包.md'
           ],
         },
