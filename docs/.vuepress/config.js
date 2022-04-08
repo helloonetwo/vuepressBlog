@@ -71,7 +71,18 @@ module.exports = {
           children: [
             '手写 Vue Router.md',
             '手写响应式实现.md',
-            '手写虚拟 DOM 和 Diff 算法.md'
+            '手写虚拟 DOM 和 Diff 算法.md',
+            'Vue源码-Virtual DOM.md'
+          ],
+        },
+        {
+          title: "Node 全栈开发",
+          collapsable: true,
+          children: [
+            'Node.js 高级编程',
+            '手写响应式实现.md',
+            '手写虚拟 DOM 和 Diff 算法.md',
+            'Vue源码-Virtual DOM.md'
           ],
         },
       ],
