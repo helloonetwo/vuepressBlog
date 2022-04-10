@@ -1,4 +1,4 @@
-## Node.js 高级编程
+## Node.js 基础知识
 
 ### Nodejs 可以做什么？
 
@@ -103,230 +103,108 @@ server.listen(8080, () => {
 - require：实现模块的加载
 - module、exports：处理模块的导出
 
+
+### process全局变量
+
+> 获取进程信息
+
+#### 资源： cpu 内存
+
+占用 arrayBuffers 声明一个大小为 1000 的 Buffer
 ```js
-...
-import commonjs from 'rollup-plugin-commonjs'
-
-export default {
-    ...
-    plugins: [
-        ...
-        commonjs()
-    ]
-}
+// Buffer.alloc(1000)
 ```
-
 ```js
-// src/cjs-module.js
-
-module.exports = {
-  foo: "bar",
-};
+console.log(process.memoryUsage())
+// {
+//   rss: 24879104, // 常驻内存
+//   heapTotal: 4509696, // 脚本执行之初申请的总的内存大小
+//   heapUsed: 2415608, // 当前脚本在执行中实际使用的内存大小
+//   external: 808874, // 底层 C/C++ 模块所占据的内存大小
+//   arrayBuffers: 9386 // 缓冲区，代表一块独立的空间，不占据 V8 的内存，默认也会先申请一块空间
+// }
 ```
-
 ```js
-// src/index.js
-
-// 导入模块成员
-...
-import { log } from './logger'
-...
-import cjs from './cjs-module'
-
-// 使用模块成员
-...
-log(cjs)
+console.log(process.cpuUsage())
+// {
+//   user: 31000, // 用户占用的 CPU 时间片段
+//   system: 78000 // 操作系统占用的 CPU 时间片段
+// }
 ```
-
-### Rollup Code Splitting
-
-在 Rollup 最新的版本中已经开始支持代码拆分了，同样可以使用符合 ESM 标准的动态导入（Dynamic Imports）的方式实现模块的按需加载，Rollup 内部也会自动处理代码拆分（Code Splitting）也就是我们说的分包。
-
+#### 运行环境：运行目录、node环境、cpu架构、用户环境、系统平台
+2.1 运行目录
 ```js
-// src/index.js
-
-import("./logger").then(({ log }) => {
-  log("code splitting~");
-});
+console.log(process.cwd())
 ```
-
-自执行函数会把所有的模块都放在同一个函数中，无法实现代码拆分。浏览器环境可以使用 amd 格式输出，但是 Code Splitting 需要输出多个文件，就不能再使用 file 配置，而是使用 dir 参数。
-
+2.2 node 环境信息
 ```js
-// rollup.config.js
-export default {
-  input: "src/index.js",
-  output: {
-    // file: 'dist/bundle.js',
-    // format: 'iife'
-    dir: "dist", // 输出目录
-    format: "amd", // 输出格式
-  },
-};
+console.log(process.version) // node 版本
+console.log(process.versions) // 更多版本信息
 ```
-
-### Rollup 多入口打包
-
-- 对于不同入口的公共部分也会自动提取到单个文件作为独立的 bunder
-
+2.3 cpu 架构
 ```js
-export default {
-  // input: ['src/index.js', 'src/album.js'],
-  input: {
-    foo: "src/index.js",
-    bar: "src/album.js",
-  },
-  output: {
-    dir: "dist",
-    format: "amd", // 内部使用代码拆分 就不能使用自调用函数
-  },
-};
+console.log(process.arch) // x64
 ```
-
-- 对于 amd 这种输出模式的输出文件，不能直接引用到页面，必须通过实现 AMD 标准的库加载
-
+2.4 用户环境（开发环境）
 ```js
-  ...
-
-<body>
-  <!-- AMD 标准格式的输出 bundle 不能直接引用 -->
-  <!-- <script src="foo.js"></script> -->
-  <!-- 需要 Require.js 这样的库 -->
-  <script src="https://unpkg.com/requirejs@2.3.6/require.js" data-main="foo.js"></script>
-</body>
+console.log(process.env.NODE_ENV)
+console.log(process.env.PATH)
 ```
-
-### Rollup / Webpack 选用规则
-
-我们发现，Rollup 确实有它的优势
-
-输出结果更加扁平
-自动移除未引用代码
-打包结果依然完全可读
-缺点也很明显
-
-加载非 ESM 的第三方模块比较复杂
-模块最终都被打爆到一个函数中，无法实现 HMR
-浏览器环境中，代码拆分功能依赖 AMD 库
-综合以上特点，我们发现
-
-如果我们正在开发应用程序（大量引入第三方模块、需要 HMR 提升开发体验、体积过大需要分包）不适合使用 Rollup，建议使用 Webpack
-如果我们正在开发一个框架或者类库（很少依赖第三方模块）适合使用 Rollup
-大多数知名框架/库都在使用 Rollup
-Webpack 大而全，Rollup 小而美
-
-## Parcel 打包
-
-Parcel：零配置的前端应用打包器
-
-1.在一个空项目中初始化 package.json
-
+2.5 系统平台
 ```js
-yarn init
+console.log(process.platform) // win32
 ```
+#### 运行状态
 
-2.安装 parcel-bundler 模块
-
+3.1 启动参数(如 node <脚本文件> 1 -a 2 -b)
 ```js
-yarn add parcel-bundler --dev
+console.log(process.argv) // [<node 启动程序绝对路径>, <脚本文件绝对路径>, '1', '-a', '2', '-b']
 ```
-
-虽然 Parcel 与 Webpack 一样都支持以任意类型的文件作为打包入口，但是 Parcel 官方建议我们使用 html 文件，理由为 HTML 是应用运行在浏览器端的入口。
-
+3.2 进程 PID
 ```js
-// 打包入口 src/index.html
-
-<body>
-  <script src="main.js"></script>
-</body>
+console.log(process.pid)
 ```
-
-Parcel 同样支持对 ESM 的打包
-
+3.3 运行时间
 ```js
-// src/main.js
-
-import foo from "./foo";
-
-foo.bar();
+setTimeout(() => {
+  console.log(process.uptime()) // 脚本从运行开始到结束总共消耗的时间
+}, 3000)
 ```
 
+#### 事件监听
 ```js
-// src/foo.js
-
-export default {
-  bar: () => {
-    console.log("hello parcel~");
-  },
-};
-```
-
-```
-yarn parcel src/index.html
-```
-
-我们可以发现，Parcel 不仅仅帮我们打包了应用，而且还同时开启了一个开发服务器，类似 Webpak 的 Dev Server，如果我们需要模块热替换，Parcel 也支持。
-
-```js
-// src/main.js
-
-import foo from "./foo";
-
-foo.bar();
-if (module.hot) {
-  module.hot.accept(() => {
-    // 此处的 accept 只接受一个参数 当前的模块或所依赖模块更新才会执行
-    console.log("hmr");
-  });
-}
-```
-
-除了热替换，Parcel 还支持自动安装依赖，极大程度避免了额外的一些手动操作。
-
-除此之外，Parcel 同样支持加载其他类型的资源模块，而且相比其他的模块打包器，在 Parcel 中加载任意类型的资源模块也是零配置，整个过程不需要安装任何插件。
-
-我们还可以添加图片到项目当中
-
-```js
-// src/style.css
-
-body {
-background-color: #282c40;
-}
-```
-
-```js
-// src/main.js
-
-import $ from 'jquery'
-...
-import './style.css'
-import logo from './zce.png'
-
-...
-$(document.body).append(`<img src="${logo}" />`)
-...
-
-```
-
-Parcel 同样支持使用动态导入，内部如果使用了动态导入，它也会自动拆分代码
-
-```js
-// src/main.js
-
-// import $ from 'jquery'
-...
-import('jquery').then($ => {
-...
-$(document.body).append(`<img src="${logo}" />`)
+// beforExit 中可使用异步代码，exit中只能使用同步代码
+process.on('exit', (code) => {
+  console.log('exit ' + code);
 })
-...
+
+process.on('beforeExit', (code) => {
+  console.log('before exit '+code);
+})
+
+console.log('code over');
+
+// 手动退出，不会触发beforeExit
+process.exit()
 ```
 
-我们再来看一下 Parcel 如何以生产环境打包
-
+#### 标准输出 输入 错误
 ```js
-yarn parcel build src/index.html
+// 读取文件并输出
+const fs = require('fs')
+fs.createReadStream('test.txt')
+     .pipe(process.stdout)
+     
+// stdin 输入，stdout输出
+process.stdin.pipe(process.stdout)
+
+process.stdin.setEncoding('utf-8')
+process.stdin.on('readable', () => {
+  let chunk = process.stdin.read()
+  if (chunk !== null) {
+    process.stdout.write('data'+chunk)
+  }
+})
 ```
 
-需要注意的是，对于相同体量的打包，Parcel 会比 Webpack 的构建速度快很多。因为在 Parcel 内部是多进程同时去工作，充分发挥了多核 CPU 的性能。当然 Webpack 中也可以使用 happypack 的插件来实现这一点。
+## Node.js 核心模块

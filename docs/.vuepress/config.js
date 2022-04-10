@@ -19,7 +19,7 @@ module.exports = {
     lastUpdated: 'Last Updated', // string | boolean
     nav: [
       // 导航栏配置
-      { text: "前端基础", link: "/accumulate/" },
+      { text: "吃透前端工程化", link: "/engineering/"},
       { text: "大前端", link: "/algorithm/" },
       { text: "系统分析师", link: "/system/" },
       { text: "源码系列", link: "/hand/" },
@@ -95,6 +95,10 @@ module.exports = {
         "call",
         "手写 Promie",
         "手写 vue-router4"
+      ],
+      "/engineering/": [
+        "",
+        "企业工程化场景分析&工程化核心技术讲解.md"
       ],
     },
     sidebarDepth: 1,
