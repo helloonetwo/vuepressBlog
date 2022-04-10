@@ -72,7 +72,11 @@ module.exports = {
             '手写 Vue Router.md',
             '手写响应式实现.md',
             '手写虚拟 DOM 和 Diff 算法.md',
-            'Vue源码-Virtual DOM.md'
+            'Vue源码-Virtual DOM.md',
+            'Vuex 数据流管理及Vue.js 服务端渲染（SSR）.md',
+            '搭建自己的SSR、静态站点生成（SSG）及封装 Vue.js 组件库.md',
+            'Vue.js 3.0 Composition APIs 及 3.0 原理剖析.md',
+            'Vue.js + TypeScript 实战项目开发与项目优化.md'
           ],
         },
         {
