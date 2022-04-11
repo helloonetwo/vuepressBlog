@@ -96,9 +96,8 @@ module.exports = {
         "手写 Promie",
         "手写 vue-router4"
       ],
-      "/engineering/": [
-        "",
-        "企业工程化场景分析&工程化核心技术讲解.md"
+      "/Engineering/": [
+        ""
       ],
     },
     sidebarDepth: 1,
