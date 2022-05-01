@@ -1,4 +1,5 @@
-# 第2章  企业工程化场景分析&工程化核心技术讲解
+# 企业工程化场景分析&工程化核心技术讲解
+
 ## 前端发展历史回顾
 ![在这里插入图片描述](https://segmentfault.com/img/remote/1460000019650483?w=1830&h=504)
 
@@ -56,3 +57,168 @@
 - 开发效率 
 - 开发规范
 - 访问性能
+
+## 前端模块化
+ - 将复杂程序按照规范拆分为若干模块，一个模块包括输入输出
+ - 模块的内部实现是私有的，对外暴露接口与其他模块通信
+
+## 模块化的进化过程
+- 全局function模式 : 将不同的功能封装成不同的全局函数
+  - 编码: 将不同的功能封装成不同的全局函数
+  - 问题: 污染全局命名空间, 容易引起命名冲突或数据不安全，而且模块成员之间看不出直接关系
+```js
+function m1(){
+  //...
+}
+function m2(){
+  //...
+}
+```
+
+- namespace模式 : 简单对象封装
+  - 作用: 减少了全局变量，解决命名冲突
+  - 问题: 数据不安全(外部可以直接修改模块内部的数据)
+```js
+let myModule = {
+  data: 'www.baidu.com',
+  foo() {
+    console.log(`foo() ${this.data}`)
+  },
+  bar() {
+    console.log(`bar() ${this.data}`)
+  }
+}
+myModule.data = 'other data' //能直接修改模块内部的数据
+myModule.foo() // foo() other data
+```
+
+- IIFE模式：匿名函数自调用(闭包)
+  - 作用: 数据是私有的, 外部只能通过暴露的方法操作
+  - 编码: 将数据和行为封装到一个函数内部, 通过给window添加属性来向外暴露接口
+  - 问题: 如果当前这个模块依赖另一个模块怎么办?
+
+```js
+// index.html文件
+<script type="text/javascript" src="module.js"></script>
+<script type="text/javascript">
+    myModule.foo()
+    myModule.bar()
+    console.log(myModule.data) //undefined 不能访问模块内部数据
+    myModule.data = 'xxxx' //不是修改的模块内部的data
+    myModule.foo() //没有改变
+</script>
+
+// module.js文件
+(function(window) {
+  let data = 'www.baidu.com'
+  //操作数据的函数
+  function foo() {
+    //用于暴露有函数
+    console.log(`foo() ${data}`)
+  }
+  function bar() {
+    //用于暴露有函数
+    console.log(`bar() ${data}`)
+    otherFun() //内部调用
+  }
+  function otherFun() {
+    //内部私有的函数
+    console.log('otherFun()')
+  }
+  //暴露行为
+  window.myModule = { foo, bar } //ES6写法
+})(window)
+```
+
+- IIFE模式增强  
+  - 引入jquery到项目中
+  -  module4.js
+```js
+    (function (window, $) {
+      //数据
+     let data = '12312312'    
+      //操作数据的函数
+      function foo() { //用于暴露有函数
+        console.log(`foo() ${data}`)
+        $('body').css('background', 'red')
+      }
+    
+      function bar() {//用于暴露有函数
+        console.log(`bar() ${data}`)
+        otherFun() //内部调用
+      }
+    
+      function otherFun() { //内部私有的函数
+        console.log('otherFun()')
+      }    
+
+      //暴露行为
+      window.myModule = {foo, bar}
+    })(window, jQuery)
+```
+```html
+    <script type="text/javascript" src="jquery-1.10.1.js"></script>
+    <script type="text/javascript" src="module4.js"></script>
+    <script type="text/javascript">
+      myModule.foo()
+    </script>
+```
+  - 说明
+  - IIFE模式增强 : 引入依赖
+  - 这就是现代模块实现的基石
+
+- 页面加载多个js的问题  * 页面:    
+```
+    <script type="text/javascript" src="module1.js"></script>
+    <script type="text/javascript" src="module2.js"></script>
+    <script type="text/javascript" src="module3.js"></script>
+    <script type="text/javascript" src="module4.js"></script>
+    <script type="text/javascript" src="module5.js"></script>
+    <script type="text/javascript" src="module6.js"></script>
+    <script type="text/javascript" src="module7.js"></script>
+    <script type="text/javascript" src="module8.js"></script>
+    <script type="text/javascript" src="module9.js"></script>
+    <script type="text/javascript" src="module10.js"></script>
+    <script type="text/javascript" src="module11.js"></script>
+    <script type="text/javascript" src="module12.js"></script>
+```
+- 问题:
+  - 请求过多
+  - 依赖模糊
+  - 难以维护
+
+
+
+## Commonjs 模块化规范
+### Commonjs 模块化规范 介绍
+  - 每个文件就是一个模块 有自己的作用域
+  - 采用同步加载模式
+  - 通过require 加载模块  通过exports 或者 module.exports 导出模块
+  - 所有代码运行在自己的模块作用域 不会污染全局作用域
+  -  模块可以多次加载 第一次加载模块时 会将模块的输出结果缓存起来 再次加载时 直接从缓存中读取模块输出结果
+  - 模块的加载顺序 是按照代码的书写顺序的 
+  - 模块输出的值是值的拷贝
+
+
+
+## AMD 模块化规范
+-  AMD 采用非同步加载模块
+- 浏览器环境下  模块需要请求获取 适合异步加载
+- require 是 AMD的一个具体的库 
+
+
+## cmd
+- CMD 整合了COMMONjs 和 AMD的优点  模块加载是异步的 
+- CMD专门用于浏览器端 sea.js 是代表
+- 没有通过标准语法规范 
+
+## ESModules
+- 设计理念是在编译时确定模块依赖关系及输入输出关系
+- Commonjs 和 AMD 必须在运行时确定依赖关系及输入输出关系
+- 通过import加载模块  通过export导出模块
+
+
+## COMMONJS 与 ESModules 规范对比
+ - CommonJS模块输出的是值的拷贝 ES6模块输出的是值的引用
+ - CommonJS 是运行是加载  ESModules是编译时输出接口
+ - CommonJS是单个值导出 ESModules 可以导出多个
