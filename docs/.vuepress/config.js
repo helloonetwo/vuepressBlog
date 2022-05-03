@@ -99,7 +99,8 @@ module.exports = {
       "/engineering/": [
         "",
         "webpack简单使用.md",
-        "原生js项目工程化性能优化.md"
+        "原生js项目工程化性能优化.md",
+        "vue-cli核心源码解析.md"
       ],
     },
     sidebarDepth: 1,
