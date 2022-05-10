@@ -101,7 +101,8 @@ module.exports = {
         "webpack简单使用.md",
         "原生js项目工程化性能优化.md",
         "vue-cli核心源码解析.md",
-        "项目打包构建优化.md"
+        "项目打包构建优化.md",
+        "脚手架开发.md"
       ],
     },
     sidebarDepth: 1,
