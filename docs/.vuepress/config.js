@@ -23,7 +23,10 @@ module.exports = {
       { text: "大前端", link: "/algorithm/" },
       { text: "系统分析师", link: "/system/" },
       { text: "源码系列", link: "/hand/" },
+      { text: "js高级玩法", link: "/jsgaoji/" },
       { text: "设计模式", link: "/mode/" },
+      { text: "前端发布脚手架", link: "/publish/" },
+      { text: "web 前端架构师", link: "/web/" },
       // {
       //   text: "个人组件库",
       //   link: "https://helloonetwo.github.io/xiao-ui-website",
@@ -43,6 +46,9 @@ module.exports = {
       "/system/": [
         "",
         "计算机组成与系统.md"
+      ],
+      "/web/": [
+        "B端项目需求分析 和 架构设计"
       ],
       "/mode/": [
         "",
@@ -96,6 +102,10 @@ module.exports = {
         "手写 Promie",
         "手写 vue-router4"
       ],
+      "/jsgaoji/": [
+        "",
+        "深入探索网络请求"
+      ],
       "/engineering/": [
         "",
         "webpack简单使用.md",
@@ -104,6 +114,11 @@ module.exports = {
         "项目打包构建优化.md",
         "脚手架开发.md"
       ],
+      "/publish/": [
+        "",
+        "深入探索网络请求"
+      ],
+      
     },
     sidebarDepth: 1,
   },
