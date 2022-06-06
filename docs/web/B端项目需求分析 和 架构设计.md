@@ -1,4 +1,4 @@
-# 第7周 B端项目需求分析 和 架构设计
+# B端项目需求分析 和 架构设计
 架构原型：https://whimsical.com/RTJphPrwzksyotCdA32LQU
 ## 将收获什么
 - 做怎样的项目完成瓶颈期的突破
