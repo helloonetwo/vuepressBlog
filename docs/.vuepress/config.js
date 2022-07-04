@@ -23,7 +23,7 @@ module.exports = {
       { text: "大前端", link: "/algorithm/" },
       { text: "系统分析师", link: "/system/" },
       { text: "源码系列", link: "/hand/" },
-      { text: "js高级玩法", link: "/jsgaoji/" },
+      { text: "数据可视化", link: "/guide/" },
       { text: "设计模式", link: "/mode/" },
       { text: "前端发布脚手架", link: "/publish/" },
       { text: "web 前端架构师", link: "/web/" },
@@ -47,6 +47,72 @@ module.exports = {
         "",
         "计算机组成与系统.md"
       ],
+      '/guide/': [
+        {
+          title: '指南',
+          collapsable: false,
+          children: [
+            ''
+          ]
+        },
+        {
+          title: '基础阶段',
+          collapsable: false,
+          children: [
+            'guide/scene',
+            'guide/tech',
+            'guide/canvas',
+            'guide/svg',
+            'guide/webgl',
+            'guide/zrender',
+            'guide/d3',
+            'guide/three',
+            'guide/highcharts',
+            'guide/antv',
+            'guide/echarts',
+            'guide/echarts-basic',
+            'guide/compare',
+            'guide/bmap',
+            'guide/bmap-harder',
+            'guide/bmap-datav',
+            'guide/bmap-webpack',
+            'guide/echarts-map',
+            'guide/amap',
+            'guide/amap-harder',
+            'guide/amap-datav',
+          ]
+        },
+        {
+          title: '数据报表项目',
+          collapsable: false,
+          children: [
+            'report/guide',
+            'report/qa',
+            'report/summary',
+          ]
+        },
+        {
+          title: '数据大屏项目',
+          collapsable: false,
+          children: [
+            'screen/guide',
+          ]
+        },
+        {
+          title: '移动报表项目',
+          collapsable: false,
+          children: [
+            'mobile/guide',
+          ]
+        },
+        {
+          title: 'api',
+          collapsable: false,
+          children: [
+            'api/api',
+          ]
+        },
+      ],
       "/web/": [
         "B端项目需求分析 和 架构设计",
         "业务组件库发布流程.md"
@@ -59,6 +125,14 @@ module.exports = {
         {
           title: "JavaScript 深度剖析",
           children: ["", 'ECMAScript.md', "手写 Promie", "JS 异步编程", 'Event Loop.md', 'TypeScript.md', 'javascript性能优化.md'],
+        },
+        {
+          title: "数据可视化",
+          children: ["canvans.md"],
+        },
+        {
+          title: "计算机网络",
+          children: ['工具链及其他.md', "深入探索网络请求.md", "JS 异步编程", 'Event Loop.md', 'TypeScript.md', 'javascript性能优化.md'],
         },
         {
           title: "前端工程化实战",
@@ -113,7 +187,9 @@ module.exports = {
         "原生js项目工程化性能优化.md",
         "vue-cli核心源码解析.md",
         "项目打包构建优化.md",
-        "脚手架开发.md"
+        "脚手架开发.md",
+        "工程设计范式.md",
+        "Git工程规范.md"
       ],
       "/publish/": [
         "",
