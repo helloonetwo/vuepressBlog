@@ -27,6 +27,7 @@ module.exports = {
       { text: "设计模式", link: "/mode/" },
       { text: "前端发布脚手架", link: "/publish/" },
       { text: "web 前端架构师", link: "/web/" },
+      { text: "wy-高级前端开发工程师", link: "/wy/" },
       // {
       //   text: "个人组件库",
       //   link: "https://helloonetwo.github.io/xiao-ui-website",
@@ -43,6 +44,11 @@ module.exports = {
       }
     ],
     sidebar: {
+      "/wy/": [
+        "",
+        "工程化",
+        "JavaScript进阶"
+      ],
       "/system/": [
         "",
         "计算机组成与系统.md"
