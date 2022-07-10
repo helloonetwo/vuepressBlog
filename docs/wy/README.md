@@ -1,0 +1,20 @@
+## 1. 前言(Preface)
+## 2. 学习大纲(Study program)
+
+```bash
+├── javaScript进阶 (JavaScript advanced) # 大厂如何去做防抖和节流
+├── 计算机网络 (Computer network)  # 学会基础知识，才能更好的理解下面的知识
+├── vue                          # 源码讲解，涉及3.0
+├── react                        # 源码讲解，涉及16.8hook
+├── node.js                      # koa源码
+├── 工程化 (engineering)          # 涉及cli
+├── 小程序  (Applet)              # 进阶
+├── 数据结构与算法 (Data structures and algorithms)                 
+├── 项目实践   (Project practice)  # react同构
+
+```
+
+
+
+
+
