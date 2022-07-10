@@ -51,6 +51,11 @@ module.exports = {
       }
     ],
     sidebar: {
+      "/wy/": [
+        "",
+        "工程化",
+        "JavaScript进阶"
+      ],
       "/system/": [
         "",
         "计算机组成与系统.md"
