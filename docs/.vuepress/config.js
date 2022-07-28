@@ -133,8 +133,8 @@ module.exports = {
           children: ["", 'ECMAScript.md', "手写 Promie", "JS 异步编程", 'Event Loop.md', 'TypeScript.md', 'javascript性能优化.md'],
         },
         {
-          title: "数据可视化",
-          children: ["canvans.md"],
+          title: "二周刷完前端面试题目",
+          children: ["",  "知识深度-原理和源码.md", "手写 Promie", "JS 异步编程", 'Event Loop.md', 'TypeScript.md', 'javascript性能优化.md'],
         },
         {
           title: "计算机网络",
