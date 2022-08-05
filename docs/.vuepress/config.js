@@ -251,7 +251,7 @@ module.exports = {
         },
         {
           title: "二周刷完前端面试题目",
-          children: ["软技能.md", "分析解决问题.md",  "知识广度-从前端到全栈.md",  "知识深度-原理和源码.md", "手写 Promie", "JS 异步编程", 'Event Loop.md', 'TypeScript.md', 'javascript性能优化.md'],
+          children: ["实际工作经验.md", "软技能.md", "分析解决问题.md",  "知识广度-从前端到全栈.md",  "知识深度-原理和源码.md", "手写 Promie", "JS 异步编程", 'Event Loop.md', 'TypeScript.md', 'javascript性能优化.md'],
         },
         {
           title: "计算机网络",

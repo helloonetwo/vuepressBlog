@@ -57,5 +57,3 @@ module.exports = {
 ```
 
 这样我们就是可以看到不同的屏幕分辨率下， html 的fontSize 是不一样的， 同时将项目的px  转换为了rem 
-
-![](./Engineering//shuju.png)
